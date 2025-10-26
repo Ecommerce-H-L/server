@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+generator kysely {
+  provider        = "prisma-kysely"
+  output          = "../db/kysely"
+  previewFeatures = ["postgresqlExtensions"]
+  fileName        = "types.ts"
+  enumFileName    = "enums.ts"
+}
+
+generator custom_kysely {
+  provider        = "../generate_enums.sh"
+  output          = "../db/kysely"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+  CUSTOMER
+}
+
+model User {
+  user_id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employee_id    String?  @db.Uuid
+  first_name     String?
+  last_name      String?
+  role           UserRole @default(EMPLOYEE) // remove this field after all usages are migrated to role_v2
+  pending_auth   Boolean  @default(true) // Not currently being used for anything - but should be mapped to auth0's pendingauth.
+  email          String?
+  auth0_sub      String?
+  auth0_metadata String?
+
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @updatedAt @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+}
