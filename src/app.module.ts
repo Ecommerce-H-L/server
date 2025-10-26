@@ -5,6 +5,8 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Env, validateEnv } from './config/env';
+import { HealthController } from './health/health.controller';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -36,8 +38,9 @@ import { Env, validateEnv } from './config/env';
         };
       },
     }),
+    HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}
