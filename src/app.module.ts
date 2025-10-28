@@ -23,7 +23,15 @@ import { HealthModule } from './health/health.module';
             level,
             transport:
               nodeEnv === 'development'
-                ? { target: 'pino-pretty', options: { singleLine: true } }
+                ? {
+                    target: 'pino-pretty',
+                    options: {
+                      singleLine: true,
+                      colorize: true,
+                      translateTime: 'SYS:standard',
+                      ignore: 'pid,hostname',
+                    },
+                  }
                 : undefined,
 
             genReqId: (req) =>

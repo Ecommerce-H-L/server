@@ -19,8 +19,15 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docs:print": "node -e \"require('./dist/print-swagger.js').print()\"",
-    "prepare": "husky && && chmod +x .husky/pre-commit",
-    "precommit": "lint-staged"
+    "prepare": "husky && chmod +x .husky/pre-commit",
+    "precommit": "lint-staged",
+    "prisma:format": "npx prisma format --schema ./src/prisma/schema.prisma",
+    "prisma:generate": "cd src && npx prisma generate --schema ./prisma/schema.prisma",
+    "prisma:migrate-dev": "cd src && npx prisma migrate dev --schema ./prisma/schema.prisma",
+    "prisma:create-only": "npx prisma migrate dev --schema ./src/prisma/schema.prisma --create-only",
+    "prisma:deploy": "npx prisma migrate deploy --schema ./src/prisma/schema.prisma",
+    "prisma:deploy-test": "npx prisma migrate deploy --schema ./src/prisma/schema-test.prisma",
+    "prisma:reset": "cd src && npx prisma migrate reset --schema ./prisma/schema.prisma"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yml,yaml}": [
@@ -46,7 +53,8 @@
     "pg": "^8.16.3",
     "pino": "^9.14.0",
     "pino-pretty": "^13.1.2",
-    "prisma": "^6.18.0",
+    "prisma": "^6.16.0",
+    "prisma-kysely": "^2.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
