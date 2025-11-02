@@ -6,9 +6,11 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CommonModule } from './common/common.module';
 import { Env, validateEnv } from './config/env';
-import { HealthController } from './health/health.controller';
-import { HealthModule } from './health/health.module';
+import { HealthController } from './routes/health/health.controller';
+import { HealthModule } from './routes/health/health.module';
+import { PostsModule } from './routes/posts/posts.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { HealthModule } from './health/health.module';
     }),
     HealthModule,
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
+    PostsModule,
+    CommonModule,
   ],
   controllers: [AppController, HealthController],
   providers: [

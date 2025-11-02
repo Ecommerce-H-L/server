@@ -6,154 +6,154 @@ export type Generated<T> =
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 import type {
-  order_status,
-  payment_method,
-  payment_status,
-  reference_type,
-  user_role,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  ReferenceType,
+  UserRole,
 } from './enums';
 
-export type brand = {
-  brand_id: string;
-  brand_name: string;
+export type Brand = {
+  brandId: string;
+  brandName: string;
   description: string | null;
-  created_at: Generated<Timestamp>;
-  created_by: string | null;
-  updated_at: Timestamp;
-  updated_by: string | null;
-  deleted_at: Timestamp | null;
+  createdAt: Generated<Timestamp>;
+  createdById: string | null;
+  updatedById: string | null;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
 };
-export type cart_item = {
-  cart_item_id: string;
-  cart_session_id: string;
-  reference_id: string;
-  reference_type: reference_type;
+export type CartItem = {
+  cartItemId: string;
+  cartSessionId: string;
+  referenceId: string;
+  referenceType: ReferenceType;
   quantity: number;
   note: string | null;
 };
-export type cart_session = {
-  cart_session_id: string;
-  user_id: string;
-  base_total_price: string;
-  total_tax: string;
+export type CartSession = {
+  cartSessionId: string;
+  userId: string;
+  baseTotalPrice: string;
+  totalTax: string;
 };
-export type category = {
-  category_id: string;
-  category_name: string;
-  created_at: Generated<Timestamp>;
-  created_by: string | null;
-  updated_at: Timestamp;
-  updated_by: string | null;
-  deleted_at: Timestamp | null;
+export type Category = {
+  categoryId: string;
+  categoryName: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
+  createdById: string | null;
+  updatedById: string | null;
 };
-export type order = {
-  order_id: string;
-  user_id: string;
-  order_status: order_status;
-  payment_method: payment_method;
-  payment_status: payment_status;
-  paid_at: Timestamp | null;
-  evidence_path: string | null;
-  total_tax: Generated<string>;
-  base_total_price: string;
-  total_amount_due: string;
+export type Order = {
+  orderId: string;
+  userId: string;
+  orderStatus: OrderStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  paidAt: Timestamp | null;
+  evidencePath: string | null;
+  totalTax: Generated<string>;
+  baseTotalPrice: string;
+  totalAmountDue: string;
   note: string | null;
-  user_phone: string | null;
-  user_address: string | null;
-  updated_by: string | null;
-  created_at: Generated<Timestamp>;
-  updated_at: Timestamp;
-  deleted_at: Timestamp | null;
+  userPhone: string | null;
+  userAddress: string | null;
+  updatedById: string | null;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
 };
-export type order_item = {
-  order_item_id: string;
-  order_id: string;
-  order_item_name: string;
-  reference_id: string;
-  reference_type: reference_type;
+export type OrderItem = {
+  orderItemId: string;
+  orderId: string;
+  orderItemName: string;
+  referenceId: string;
+  referenceType: ReferenceType;
   quantity: number;
   price: string;
   note: string | null;
 };
-export type product = {
-  product_id: string;
-  product_name: string;
-  product_type: string;
+export type Product = {
+  productId: string;
+  productName: string;
+  productType: string;
   price: string;
   quantity: number;
-  usage_instructions: string | null;
+  usageInstructions: string | null;
   description: string | null;
   ingredients: string | null;
-  brand_id: string | null;
-  created_at: Generated<Timestamp>;
-  created_by: string | null;
-  updated_at: Timestamp;
-  updated_by: string | null;
-  deleted_at: Timestamp | null;
+  brandId: string | null;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
+  createdById: string | null;
+  updatedById: string | null;
 };
-export type product_category = {
-  product_category_id: string;
-  product_id: string;
-  category_id: string;
-  created_at: Generated<Timestamp>;
-  created_by: string | null;
-  updated_at: Timestamp;
-  updated_by: string | null;
-  deleted_at: Timestamp | null;
+export type ProductCategory = {
+  productCategoryId: string;
+  productId: string;
+  categoryId: string;
+  createdAt: Generated<Timestamp>;
+  createdById: string | null;
+  updatedAt: Timestamp;
+  updatedById: string | null;
+  deletedAt: Timestamp | null;
 };
-export type product_images = {
-  product_image_id: string;
-  product_id: string;
-  image_path: string;
-  created_at: Generated<Timestamp>;
-  created_by: string | null;
-  updated_at: Timestamp;
-  updated_by: string | null;
-  deleted_at: Timestamp | null;
+export type ProductImage = {
+  productImageId: string;
+  productId: string;
+  imagePath: string;
+  createdAt: Generated<Timestamp>;
+  createdById: string | null;
+  updatedAt: Timestamp;
+  updatedById: string | null;
+  deletedAt: Timestamp | null;
 };
-export type refresh_token = {
+export type RefreshToken = {
   token: string;
-  user_id: string;
-  expired_at: Timestamp;
-  created_at: Generated<Timestamp>;
+  userId: string;
+  expiredAt: Timestamp;
+  createdAt: Generated<Timestamp>;
 };
-export type role_permission = {
-  role_permission_id: string;
-  permission_feature: string;
-  permission_action: string;
-  created_at: Generated<Timestamp>;
-  updated_at: Timestamp;
-  deleted_at: Timestamp | null;
+export type RolePermission = {
+  rolePermissionId: string;
+  permissionFeature: string;
+  permissionAction: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
 };
-export type user = {
-  user_id: string;
-  first_name: string;
-  last_name: string;
+export type User = {
+  userId: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password_hash: string;
-  role: user_role;
-  created_at: Generated<Timestamp>;
-  updated_at: Timestamp;
-  deleted_at: Timestamp | null;
+  passwordHash: string;
+  role: UserRole;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  deletedAt: Timestamp | null;
 };
-export type user_location = {
-  user_location_id: string;
-  user_id: string;
+export type UserLocation = {
+  userLocationId: string;
+  userId: string;
   phone: string;
   address: string;
 };
 export type DB = {
-  brand: brand;
-  cart_item: cart_item;
-  cart_session: cart_session;
-  category: category;
-  order: order;
-  order_item: order_item;
-  product: product;
-  product_category: product_category;
-  product_images: product_images;
-  refresh_token: refresh_token;
-  role_permission: role_permission;
-  user: user;
-  user_location: user_location;
+  Brand: Brand;
+  CartItem: CartItem;
+  CartSession: CartSession;
+  category: Category;
+  Order: Order;
+  OrderItem: OrderItem;
+  Product: Product;
+  ProductCategory: ProductCategory;
+  ProductImage: ProductImage;
+  RefreshToken: RefreshToken;
+  RolePermission: RolePermission;
+  User: User;
+  UserLocation: UserLocation;
 };

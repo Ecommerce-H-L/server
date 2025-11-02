@@ -1,352 +1,352 @@
-export const brand_FieldEnum = {
-  brand_id: 'brand_id',
-  brand_name: 'brand_name',
+export const Brand_FieldEnum = {
+  brandId: 'brandId',
+  brandName: 'brandName',
   description: 'description',
-  created_at: 'created_at',
-  created_by: 'created_by',
-  updated_at: 'updated_at',
-  updated_by: 'updated_by',
-  deleted_at: 'deleted_at',
+  createdAt: 'createdAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
 } as const;
-export type brand_FieldEnum =
-  (typeof brand_FieldEnum)[keyof typeof brand_FieldEnum];
+export type Brand_FieldEnum =
+  (typeof Brand_FieldEnum)[keyof typeof Brand_FieldEnum];
 
-export const brand_FieldWithTableEnum = {
-  brand_id: 'brand.brand_id',
-  brand_name: 'brand.brand_name',
-  description: 'brand.description',
-  created_at: 'brand.created_at',
-  created_by: 'brand.created_by',
-  updated_at: 'brand.updated_at',
-  updated_by: 'brand.updated_by',
-  deleted_at: 'brand.deleted_at',
+export const Brand_FieldWithTableEnum = {
+  brandId: 'null.brandId',
+  brandName: 'null.brandName',
+  description: 'null.description',
+  createdAt: 'null.createdAt',
+  createdById: 'null.createdById',
+  updatedById: 'null.updatedById',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type brand_FieldWithTableEnum =
-  (typeof brand_FieldWithTableEnum)[keyof typeof brand_FieldWithTableEnum];
+export type Brand_FieldWithTableEnum =
+  (typeof Brand_FieldWithTableEnum)[keyof typeof Brand_FieldWithTableEnum];
 
-export const cart_item_FieldEnum = {
-  cart_item_id: 'cart_item_id',
-  cart_session_id: 'cart_session_id',
-  reference_id: 'reference_id',
-  reference_type: 'reference_type',
+export const CartItem_FieldEnum = {
+  cartItemId: 'cartItemId',
+  cartSessionId: 'cartSessionId',
+  referenceId: 'referenceId',
+  referenceType: 'referenceType',
   quantity: 'quantity',
   note: 'note',
 } as const;
-export type cart_item_FieldEnum =
-  (typeof cart_item_FieldEnum)[keyof typeof cart_item_FieldEnum];
+export type CartItem_FieldEnum =
+  (typeof CartItem_FieldEnum)[keyof typeof CartItem_FieldEnum];
 
-export const cart_item_FieldWithTableEnum = {
-  cart_item_id: 'cart_item.cart_item_id',
-  cart_session_id: 'cart_item.cart_session_id',
-  reference_id: 'cart_item.reference_id',
-  reference_type: 'cart_item.reference_type',
-  quantity: 'cart_item.quantity',
-  note: 'cart_item.note',
+export const CartItem_FieldWithTableEnum = {
+  cartItemId: 'null.cartItemId',
+  cartSessionId: 'null.cartSessionId',
+  referenceId: 'null.referenceId',
+  referenceType: 'null.referenceType',
+  quantity: 'null.quantity',
+  note: 'null.note',
 } as const;
-export type cart_item_FieldWithTableEnum =
-  (typeof cart_item_FieldWithTableEnum)[keyof typeof cart_item_FieldWithTableEnum];
+export type CartItem_FieldWithTableEnum =
+  (typeof CartItem_FieldWithTableEnum)[keyof typeof CartItem_FieldWithTableEnum];
 
-export const cart_session_FieldEnum = {
-  cart_session_id: 'cart_session_id',
-  user_id: 'user_id',
-  base_total_price: 'base_total_price',
-  total_tax: 'total_tax',
+export const CartSession_FieldEnum = {
+  cartSessionId: 'cartSessionId',
+  userId: 'userId',
+  baseTotalPrice: 'baseTotalPrice',
+  totalTax: 'totalTax',
 } as const;
-export type cart_session_FieldEnum =
-  (typeof cart_session_FieldEnum)[keyof typeof cart_session_FieldEnum];
+export type CartSession_FieldEnum =
+  (typeof CartSession_FieldEnum)[keyof typeof CartSession_FieldEnum];
 
-export const cart_session_FieldWithTableEnum = {
-  cart_session_id: 'cart_session.cart_session_id',
-  user_id: 'cart_session.user_id',
-  base_total_price: 'cart_session.base_total_price',
-  total_tax: 'cart_session.total_tax',
+export const CartSession_FieldWithTableEnum = {
+  cartSessionId: 'null.cartSessionId',
+  userId: 'null.userId',
+  baseTotalPrice: 'null.baseTotalPrice',
+  totalTax: 'null.totalTax',
 } as const;
-export type cart_session_FieldWithTableEnum =
-  (typeof cart_session_FieldWithTableEnum)[keyof typeof cart_session_FieldWithTableEnum];
+export type CartSession_FieldWithTableEnum =
+  (typeof CartSession_FieldWithTableEnum)[keyof typeof CartSession_FieldWithTableEnum];
 
-export const category_FieldEnum = {
-  category_id: 'category_id',
-  category_name: 'category_name',
-  created_at: 'created_at',
-  created_by: 'created_by',
-  updated_at: 'updated_at',
-  updated_by: 'updated_by',
-  deleted_at: 'deleted_at',
+export const Category_FieldEnum = {
+  categoryId: 'categoryId',
+  categoryName: 'categoryName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
 } as const;
-export type category_FieldEnum =
-  (typeof category_FieldEnum)[keyof typeof category_FieldEnum];
+export type Category_FieldEnum =
+  (typeof Category_FieldEnum)[keyof typeof Category_FieldEnum];
 
-export const category_FieldWithTableEnum = {
-  category_id: 'category.category_id',
-  category_name: 'category.category_name',
-  created_at: 'category.created_at',
-  created_by: 'category.created_by',
-  updated_at: 'category.updated_at',
-  updated_by: 'category.updated_by',
-  deleted_at: 'category.deleted_at',
+export const Category_FieldWithTableEnum = {
+  categoryId: 'category.categoryId',
+  categoryName: 'category.categoryName',
+  createdAt: 'category.createdAt',
+  updatedAt: 'category.updatedAt',
+  deletedAt: 'category.deletedAt',
+  createdById: 'category.createdById',
+  updatedById: 'category.updatedById',
 } as const;
-export type category_FieldWithTableEnum =
-  (typeof category_FieldWithTableEnum)[keyof typeof category_FieldWithTableEnum];
+export type Category_FieldWithTableEnum =
+  (typeof Category_FieldWithTableEnum)[keyof typeof Category_FieldWithTableEnum];
 
-export const order_FieldEnum = {
-  order_id: 'order_id',
-  user_id: 'user_id',
-  order_status: 'order_status',
-  payment_method: 'payment_method',
-  payment_status: 'payment_status',
-  paid_at: 'paid_at',
-  evidence_path: 'evidence_path',
-  total_tax: 'total_tax',
-  base_total_price: 'base_total_price',
-  total_amount_due: 'total_amount_due',
+export const Order_FieldEnum = {
+  orderId: 'orderId',
+  userId: 'userId',
+  orderStatus: 'orderStatus',
+  paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus',
+  paidAt: 'paidAt',
+  evidencePath: 'evidencePath',
+  totalTax: 'totalTax',
+  baseTotalPrice: 'baseTotalPrice',
+  totalAmountDue: 'totalAmountDue',
   note: 'note',
-  user_phone: 'user_phone',
-  user_address: 'user_address',
-  updated_by: 'updated_by',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
+  userPhone: 'userPhone',
+  userAddress: 'userAddress',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
 } as const;
-export type order_FieldEnum =
-  (typeof order_FieldEnum)[keyof typeof order_FieldEnum];
+export type Order_FieldEnum =
+  (typeof Order_FieldEnum)[keyof typeof Order_FieldEnum];
 
-export const order_FieldWithTableEnum = {
-  order_id: 'order.order_id',
-  user_id: 'order.user_id',
-  order_status: 'order.order_status',
-  payment_method: 'order.payment_method',
-  payment_status: 'order.payment_status',
-  paid_at: 'order.paid_at',
-  evidence_path: 'order.evidence_path',
-  total_tax: 'order.total_tax',
-  base_total_price: 'order.base_total_price',
-  total_amount_due: 'order.total_amount_due',
-  note: 'order.note',
-  user_phone: 'order.user_phone',
-  user_address: 'order.user_address',
-  updated_by: 'order.updated_by',
-  created_at: 'order.created_at',
-  updated_at: 'order.updated_at',
-  deleted_at: 'order.deleted_at',
+export const Order_FieldWithTableEnum = {
+  orderId: 'null.orderId',
+  userId: 'null.userId',
+  orderStatus: 'null.orderStatus',
+  paymentMethod: 'null.paymentMethod',
+  paymentStatus: 'null.paymentStatus',
+  paidAt: 'null.paidAt',
+  evidencePath: 'null.evidencePath',
+  totalTax: 'null.totalTax',
+  baseTotalPrice: 'null.baseTotalPrice',
+  totalAmountDue: 'null.totalAmountDue',
+  note: 'null.note',
+  userPhone: 'null.userPhone',
+  userAddress: 'null.userAddress',
+  updatedById: 'null.updatedById',
+  createdAt: 'null.createdAt',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type order_FieldWithTableEnum =
-  (typeof order_FieldWithTableEnum)[keyof typeof order_FieldWithTableEnum];
+export type Order_FieldWithTableEnum =
+  (typeof Order_FieldWithTableEnum)[keyof typeof Order_FieldWithTableEnum];
 
-export const order_item_FieldEnum = {
-  order_item_id: 'order_item_id',
-  order_id: 'order_id',
-  order_item_name: 'order_item_name',
-  reference_id: 'reference_id',
-  reference_type: 'reference_type',
+export const OrderItem_FieldEnum = {
+  orderItemId: 'orderItemId',
+  orderId: 'orderId',
+  orderItemName: 'orderItemName',
+  referenceId: 'referenceId',
+  referenceType: 'referenceType',
   quantity: 'quantity',
   price: 'price',
   note: 'note',
 } as const;
-export type order_item_FieldEnum =
-  (typeof order_item_FieldEnum)[keyof typeof order_item_FieldEnum];
+export type OrderItem_FieldEnum =
+  (typeof OrderItem_FieldEnum)[keyof typeof OrderItem_FieldEnum];
 
-export const order_item_FieldWithTableEnum = {
-  order_item_id: 'order_item.order_item_id',
-  order_id: 'order_item.order_id',
-  order_item_name: 'order_item.order_item_name',
-  reference_id: 'order_item.reference_id',
-  reference_type: 'order_item.reference_type',
-  quantity: 'order_item.quantity',
-  price: 'order_item.price',
-  note: 'order_item.note',
+export const OrderItem_FieldWithTableEnum = {
+  orderItemId: 'null.orderItemId',
+  orderId: 'null.orderId',
+  orderItemName: 'null.orderItemName',
+  referenceId: 'null.referenceId',
+  referenceType: 'null.referenceType',
+  quantity: 'null.quantity',
+  price: 'null.price',
+  note: 'null.note',
 } as const;
-export type order_item_FieldWithTableEnum =
-  (typeof order_item_FieldWithTableEnum)[keyof typeof order_item_FieldWithTableEnum];
+export type OrderItem_FieldWithTableEnum =
+  (typeof OrderItem_FieldWithTableEnum)[keyof typeof OrderItem_FieldWithTableEnum];
 
-export const product_FieldEnum = {
-  product_id: 'product_id',
-  product_name: 'product_name',
-  product_type: 'product_type',
+export const Product_FieldEnum = {
+  productId: 'productId',
+  productName: 'productName',
+  productType: 'productType',
   price: 'price',
   quantity: 'quantity',
-  usage_instructions: 'usage_instructions',
+  usageInstructions: 'usageInstructions',
   description: 'description',
   ingredients: 'ingredients',
-  brand_id: 'brand_id',
-  created_at: 'created_at',
-  created_by: 'created_by',
-  updated_at: 'updated_at',
-  updated_by: 'updated_by',
-  deleted_at: 'deleted_at',
+  brandId: 'brandId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
 } as const;
-export type product_FieldEnum =
-  (typeof product_FieldEnum)[keyof typeof product_FieldEnum];
+export type Product_FieldEnum =
+  (typeof Product_FieldEnum)[keyof typeof Product_FieldEnum];
 
-export const product_FieldWithTableEnum = {
-  product_id: 'product.product_id',
-  product_name: 'product.product_name',
-  product_type: 'product.product_type',
-  price: 'product.price',
-  quantity: 'product.quantity',
-  usage_instructions: 'product.usage_instructions',
-  description: 'product.description',
-  ingredients: 'product.ingredients',
-  brand_id: 'product.brand_id',
-  created_at: 'product.created_at',
-  created_by: 'product.created_by',
-  updated_at: 'product.updated_at',
-  updated_by: 'product.updated_by',
-  deleted_at: 'product.deleted_at',
+export const Product_FieldWithTableEnum = {
+  productId: 'null.productId',
+  productName: 'null.productName',
+  productType: 'null.productType',
+  price: 'null.price',
+  quantity: 'null.quantity',
+  usageInstructions: 'null.usageInstructions',
+  description: 'null.description',
+  ingredients: 'null.ingredients',
+  brandId: 'null.brandId',
+  createdAt: 'null.createdAt',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
+  createdById: 'null.createdById',
+  updatedById: 'null.updatedById',
 } as const;
-export type product_FieldWithTableEnum =
-  (typeof product_FieldWithTableEnum)[keyof typeof product_FieldWithTableEnum];
+export type Product_FieldWithTableEnum =
+  (typeof Product_FieldWithTableEnum)[keyof typeof Product_FieldWithTableEnum];
 
-export const product_category_FieldEnum = {
-  product_category_id: 'product_category_id',
-  product_id: 'product_id',
-  category_id: 'category_id',
-  created_at: 'created_at',
-  created_by: 'created_by',
-  updated_at: 'updated_at',
-  updated_by: 'updated_by',
-  deleted_at: 'deleted_at',
+export const ProductCategory_FieldEnum = {
+  productCategoryId: 'productCategoryId',
+  productId: 'productId',
+  categoryId: 'categoryId',
+  createdAt: 'createdAt',
+  createdById: 'createdById',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
 } as const;
-export type product_category_FieldEnum =
-  (typeof product_category_FieldEnum)[keyof typeof product_category_FieldEnum];
+export type ProductCategory_FieldEnum =
+  (typeof ProductCategory_FieldEnum)[keyof typeof ProductCategory_FieldEnum];
 
-export const product_category_FieldWithTableEnum = {
-  product_category_id: 'product_category.product_category_id',
-  product_id: 'product_category.product_id',
-  category_id: 'product_category.category_id',
-  created_at: 'product_category.created_at',
-  created_by: 'product_category.created_by',
-  updated_at: 'product_category.updated_at',
-  updated_by: 'product_category.updated_by',
-  deleted_at: 'product_category.deleted_at',
+export const ProductCategory_FieldWithTableEnum = {
+  productCategoryId: 'null.productCategoryId',
+  productId: 'null.productId',
+  categoryId: 'null.categoryId',
+  createdAt: 'null.createdAt',
+  createdById: 'null.createdById',
+  updatedAt: 'null.updatedAt',
+  updatedById: 'null.updatedById',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type product_category_FieldWithTableEnum =
-  (typeof product_category_FieldWithTableEnum)[keyof typeof product_category_FieldWithTableEnum];
+export type ProductCategory_FieldWithTableEnum =
+  (typeof ProductCategory_FieldWithTableEnum)[keyof typeof ProductCategory_FieldWithTableEnum];
 
-export const product_images_FieldEnum = {
-  product_image_id: 'product_image_id',
-  product_id: 'product_id',
-  image_path: 'image_path',
-  created_at: 'created_at',
-  created_by: 'created_by',
-  updated_at: 'updated_at',
-  updated_by: 'updated_by',
-  deleted_at: 'deleted_at',
+export const ProductImage_FieldEnum = {
+  productImageId: 'productImageId',
+  productId: 'productId',
+  imagePath: 'imagePath',
+  createdAt: 'createdAt',
+  createdById: 'createdById',
+  updatedAt: 'updatedAt',
+  updatedById: 'updatedById',
+  deletedAt: 'deletedAt',
 } as const;
-export type product_images_FieldEnum =
-  (typeof product_images_FieldEnum)[keyof typeof product_images_FieldEnum];
+export type ProductImage_FieldEnum =
+  (typeof ProductImage_FieldEnum)[keyof typeof ProductImage_FieldEnum];
 
-export const product_images_FieldWithTableEnum = {
-  product_image_id: 'product_images.product_image_id',
-  product_id: 'product_images.product_id',
-  image_path: 'product_images.image_path',
-  created_at: 'product_images.created_at',
-  created_by: 'product_images.created_by',
-  updated_at: 'product_images.updated_at',
-  updated_by: 'product_images.updated_by',
-  deleted_at: 'product_images.deleted_at',
+export const ProductImage_FieldWithTableEnum = {
+  productImageId: 'null.productImageId',
+  productId: 'null.productId',
+  imagePath: 'null.imagePath',
+  createdAt: 'null.createdAt',
+  createdById: 'null.createdById',
+  updatedAt: 'null.updatedAt',
+  updatedById: 'null.updatedById',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type product_images_FieldWithTableEnum =
-  (typeof product_images_FieldWithTableEnum)[keyof typeof product_images_FieldWithTableEnum];
+export type ProductImage_FieldWithTableEnum =
+  (typeof ProductImage_FieldWithTableEnum)[keyof typeof ProductImage_FieldWithTableEnum];
 
-export const refresh_token_FieldEnum = {
+export const RefreshToken_FieldEnum = {
   token: 'token',
-  user_id: 'user_id',
-  expired_at: 'expired_at',
-  created_at: 'created_at',
+  userId: 'userId',
+  expiredAt: 'expiredAt',
+  createdAt: 'createdAt',
 } as const;
-export type refresh_token_FieldEnum =
-  (typeof refresh_token_FieldEnum)[keyof typeof refresh_token_FieldEnum];
+export type RefreshToken_FieldEnum =
+  (typeof RefreshToken_FieldEnum)[keyof typeof RefreshToken_FieldEnum];
 
-export const refresh_token_FieldWithTableEnum = {
-  token: 'refresh_token.token',
-  user_id: 'refresh_token.user_id',
-  expired_at: 'refresh_token.expired_at',
-  created_at: 'refresh_token.created_at',
+export const RefreshToken_FieldWithTableEnum = {
+  token: 'null.token',
+  userId: 'null.userId',
+  expiredAt: 'null.expiredAt',
+  createdAt: 'null.createdAt',
 } as const;
-export type refresh_token_FieldWithTableEnum =
-  (typeof refresh_token_FieldWithTableEnum)[keyof typeof refresh_token_FieldWithTableEnum];
+export type RefreshToken_FieldWithTableEnum =
+  (typeof RefreshToken_FieldWithTableEnum)[keyof typeof RefreshToken_FieldWithTableEnum];
 
-export const role_permission_FieldEnum = {
-  role_permission_id: 'role_permission_id',
-  permission_feature: 'permission_feature',
-  permission_action: 'permission_action',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
+export const RolePermission_FieldEnum = {
+  rolePermissionId: 'rolePermissionId',
+  permissionFeature: 'permissionFeature',
+  permissionAction: 'permissionAction',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
 } as const;
-export type role_permission_FieldEnum =
-  (typeof role_permission_FieldEnum)[keyof typeof role_permission_FieldEnum];
+export type RolePermission_FieldEnum =
+  (typeof RolePermission_FieldEnum)[keyof typeof RolePermission_FieldEnum];
 
-export const role_permission_FieldWithTableEnum = {
-  role_permission_id: 'role_permission.role_permission_id',
-  permission_feature: 'role_permission.permission_feature',
-  permission_action: 'role_permission.permission_action',
-  created_at: 'role_permission.created_at',
-  updated_at: 'role_permission.updated_at',
-  deleted_at: 'role_permission.deleted_at',
+export const RolePermission_FieldWithTableEnum = {
+  rolePermissionId: 'null.rolePermissionId',
+  permissionFeature: 'null.permissionFeature',
+  permissionAction: 'null.permissionAction',
+  createdAt: 'null.createdAt',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type role_permission_FieldWithTableEnum =
-  (typeof role_permission_FieldWithTableEnum)[keyof typeof role_permission_FieldWithTableEnum];
+export type RolePermission_FieldWithTableEnum =
+  (typeof RolePermission_FieldWithTableEnum)[keyof typeof RolePermission_FieldWithTableEnum];
 
-export const user_FieldEnum = {
-  user_id: 'user_id',
-  first_name: 'first_name',
-  last_name: 'last_name',
+export const User_FieldEnum = {
+  userId: 'userId',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
-  password_hash: 'password_hash',
+  passwordHash: 'passwordHash',
   role: 'role',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
 } as const;
-export type user_FieldEnum =
-  (typeof user_FieldEnum)[keyof typeof user_FieldEnum];
+export type User_FieldEnum =
+  (typeof User_FieldEnum)[keyof typeof User_FieldEnum];
 
-export const user_FieldWithTableEnum = {
-  user_id: 'user.user_id',
-  first_name: 'user.first_name',
-  last_name: 'user.last_name',
-  email: 'user.email',
-  password_hash: 'user.password_hash',
-  role: 'user.role',
-  created_at: 'user.created_at',
-  updated_at: 'user.updated_at',
-  deleted_at: 'user.deleted_at',
+export const User_FieldWithTableEnum = {
+  userId: 'null.userId',
+  firstName: 'null.firstName',
+  lastName: 'null.lastName',
+  email: 'null.email',
+  passwordHash: 'null.passwordHash',
+  role: 'null.role',
+  createdAt: 'null.createdAt',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
 } as const;
-export type user_FieldWithTableEnum =
-  (typeof user_FieldWithTableEnum)[keyof typeof user_FieldWithTableEnum];
+export type User_FieldWithTableEnum =
+  (typeof User_FieldWithTableEnum)[keyof typeof User_FieldWithTableEnum];
 
-export const user_location_FieldEnum = {
-  user_location_id: 'user_location_id',
-  user_id: 'user_id',
+export const UserLocation_FieldEnum = {
+  userLocationId: 'userLocationId',
+  userId: 'userId',
   phone: 'phone',
   address: 'address',
 } as const;
-export type user_location_FieldEnum =
-  (typeof user_location_FieldEnum)[keyof typeof user_location_FieldEnum];
+export type UserLocation_FieldEnum =
+  (typeof UserLocation_FieldEnum)[keyof typeof UserLocation_FieldEnum];
 
-export const user_location_FieldWithTableEnum = {
-  user_location_id: 'user_location.user_location_id',
-  user_id: 'user_location.user_id',
-  phone: 'user_location.phone',
-  address: 'user_location.address',
+export const UserLocation_FieldWithTableEnum = {
+  userLocationId: 'null.userLocationId',
+  userId: 'null.userId',
+  phone: 'null.phone',
+  address: 'null.address',
 } as const;
-export type user_location_FieldWithTableEnum =
-  (typeof user_location_FieldWithTableEnum)[keyof typeof user_location_FieldWithTableEnum];
+export type UserLocation_FieldWithTableEnum =
+  (typeof UserLocation_FieldWithTableEnum)[keyof typeof UserLocation_FieldWithTableEnum];
 
 export const DB_TableEnum = {
-  brand: 'brand',
-  cart_item: 'cart_item',
-  cart_session: 'cart_session',
-  category: 'category',
-  order: 'order',
-  order_item: 'order_item',
-  product: 'product',
-  product_category: 'product_category',
-  product_images: 'product_images',
-  refresh_token: 'refresh_token',
-  role_permission: 'role_permission',
-  user: 'user',
-  user_location: 'user_location',
+  Brand: 'Brand',
+  CartItem: 'CartItem',
+  CartSession: 'CartSession',
+  Category: 'category',
+  Order: 'Order',
+  OrderItem: 'OrderItem',
+  Product: 'Product',
+  ProductCategory: 'ProductCategory',
+  ProductImage: 'ProductImage',
+  RefreshToken: 'RefreshToken',
+  RolePermission: 'RolePermission',
+  User: 'User',
+  UserLocation: 'UserLocation',
 } as const;
 export type DB_TableEnum = (typeof DB_TableEnum)[keyof typeof DB_TableEnum];
