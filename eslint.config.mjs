@@ -51,6 +51,15 @@ export default tseslint.config(
         'error',
         { prefer: 'type-imports' },
       ],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       curly: ['error', 'all'],
       eqeqeq: ['error', 'smart'],
