@@ -1,5 +1,5 @@
 export const Brand_FieldEnum = {
-  brandId: 'brandId',
+  id: 'id',
   brandName: 'brandName',
   description: 'description',
   createdAt: 'createdAt',
@@ -12,7 +12,7 @@ export type Brand_FieldEnum =
   (typeof Brand_FieldEnum)[keyof typeof Brand_FieldEnum];
 
 export const Brand_FieldWithTableEnum = {
-  brandId: 'null.brandId',
+  id: 'null.id',
   brandName: 'null.brandName',
   description: 'null.description',
   createdAt: 'null.createdAt',
@@ -25,7 +25,7 @@ export type Brand_FieldWithTableEnum =
   (typeof Brand_FieldWithTableEnum)[keyof typeof Brand_FieldWithTableEnum];
 
 export const CartItem_FieldEnum = {
-  cartItemId: 'cartItemId',
+  id: 'id',
   cartSessionId: 'cartSessionId',
   referenceId: 'referenceId',
   referenceType: 'referenceType',
@@ -36,7 +36,7 @@ export type CartItem_FieldEnum =
   (typeof CartItem_FieldEnum)[keyof typeof CartItem_FieldEnum];
 
 export const CartItem_FieldWithTableEnum = {
-  cartItemId: 'null.cartItemId',
+  id: 'null.id',
   cartSessionId: 'null.cartSessionId',
   referenceId: 'null.referenceId',
   referenceType: 'null.referenceType',
@@ -47,7 +47,7 @@ export type CartItem_FieldWithTableEnum =
   (typeof CartItem_FieldWithTableEnum)[keyof typeof CartItem_FieldWithTableEnum];
 
 export const CartSession_FieldEnum = {
-  cartSessionId: 'cartSessionId',
+  id: 'id',
   userId: 'userId',
   baseTotalPrice: 'baseTotalPrice',
   totalTax: 'totalTax',
@@ -56,7 +56,7 @@ export type CartSession_FieldEnum =
   (typeof CartSession_FieldEnum)[keyof typeof CartSession_FieldEnum];
 
 export const CartSession_FieldWithTableEnum = {
-  cartSessionId: 'null.cartSessionId',
+  id: 'null.id',
   userId: 'null.userId',
   baseTotalPrice: 'null.baseTotalPrice',
   totalTax: 'null.totalTax',
@@ -65,7 +65,7 @@ export type CartSession_FieldWithTableEnum =
   (typeof CartSession_FieldWithTableEnum)[keyof typeof CartSession_FieldWithTableEnum];
 
 export const Category_FieldEnum = {
-  categoryId: 'categoryId',
+  id: 'id',
   categoryName: 'categoryName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -77,19 +77,19 @@ export type Category_FieldEnum =
   (typeof Category_FieldEnum)[keyof typeof Category_FieldEnum];
 
 export const Category_FieldWithTableEnum = {
-  categoryId: 'category.categoryId',
-  categoryName: 'category.categoryName',
-  createdAt: 'category.createdAt',
-  updatedAt: 'category.updatedAt',
-  deletedAt: 'category.deletedAt',
-  createdById: 'category.createdById',
-  updatedById: 'category.updatedById',
+  id: 'null.id',
+  categoryName: 'null.categoryName',
+  createdAt: 'null.createdAt',
+  updatedAt: 'null.updatedAt',
+  deletedAt: 'null.deletedAt',
+  createdById: 'null.createdById',
+  updatedById: 'null.updatedById',
 } as const;
 export type Category_FieldWithTableEnum =
   (typeof Category_FieldWithTableEnum)[keyof typeof Category_FieldWithTableEnum];
 
 export const Order_FieldEnum = {
-  orderId: 'orderId',
+  id: 'id',
   userId: 'userId',
   orderStatus: 'orderStatus',
   paymentMethod: 'paymentMethod',
@@ -111,7 +111,7 @@ export type Order_FieldEnum =
   (typeof Order_FieldEnum)[keyof typeof Order_FieldEnum];
 
 export const Order_FieldWithTableEnum = {
-  orderId: 'null.orderId',
+  id: 'null.id',
   userId: 'null.userId',
   orderStatus: 'null.orderStatus',
   paymentMethod: 'null.paymentMethod',
@@ -133,7 +133,7 @@ export type Order_FieldWithTableEnum =
   (typeof Order_FieldWithTableEnum)[keyof typeof Order_FieldWithTableEnum];
 
 export const OrderItem_FieldEnum = {
-  orderItemId: 'orderItemId',
+  id: 'id',
   orderId: 'orderId',
   orderItemName: 'orderItemName',
   referenceId: 'referenceId',
@@ -146,7 +146,7 @@ export type OrderItem_FieldEnum =
   (typeof OrderItem_FieldEnum)[keyof typeof OrderItem_FieldEnum];
 
 export const OrderItem_FieldWithTableEnum = {
-  orderItemId: 'null.orderItemId',
+  id: 'null.id',
   orderId: 'null.orderId',
   orderItemName: 'null.orderItemName',
   referenceId: 'null.referenceId',
@@ -159,7 +159,7 @@ export type OrderItem_FieldWithTableEnum =
   (typeof OrderItem_FieldWithTableEnum)[keyof typeof OrderItem_FieldWithTableEnum];
 
 export const Product_FieldEnum = {
-  productId: 'productId',
+  id: 'id',
   productName: 'productName',
   productType: 'productType',
   price: 'price',
@@ -178,7 +178,7 @@ export type Product_FieldEnum =
   (typeof Product_FieldEnum)[keyof typeof Product_FieldEnum];
 
 export const Product_FieldWithTableEnum = {
-  productId: 'null.productId',
+  id: 'null.id',
   productName: 'null.productName',
   productType: 'null.productType',
   price: 'null.price',
@@ -197,7 +197,7 @@ export type Product_FieldWithTableEnum =
   (typeof Product_FieldWithTableEnum)[keyof typeof Product_FieldWithTableEnum];
 
 export const ProductCategory_FieldEnum = {
-  productCategoryId: 'productCategoryId',
+  id: 'id',
   productId: 'productId',
   categoryId: 'categoryId',
   createdAt: 'createdAt',
@@ -210,7 +210,7 @@ export type ProductCategory_FieldEnum =
   (typeof ProductCategory_FieldEnum)[keyof typeof ProductCategory_FieldEnum];
 
 export const ProductCategory_FieldWithTableEnum = {
-  productCategoryId: 'null.productCategoryId',
+  id: 'null.id',
   productId: 'null.productId',
   categoryId: 'null.categoryId',
   createdAt: 'null.createdAt',
@@ -223,7 +223,7 @@ export type ProductCategory_FieldWithTableEnum =
   (typeof ProductCategory_FieldWithTableEnum)[keyof typeof ProductCategory_FieldWithTableEnum];
 
 export const ProductImage_FieldEnum = {
-  productImageId: 'productImageId',
+  id: 'id',
   productId: 'productId',
   imagePath: 'imagePath',
   createdAt: 'createdAt',
@@ -236,7 +236,7 @@ export type ProductImage_FieldEnum =
   (typeof ProductImage_FieldEnum)[keyof typeof ProductImage_FieldEnum];
 
 export const ProductImage_FieldWithTableEnum = {
-  productImageId: 'null.productImageId',
+  id: 'null.id',
   productId: 'null.productId',
   imagePath: 'null.imagePath',
   createdAt: 'null.createdAt',
@@ -268,6 +268,7 @@ export type RefreshToken_FieldWithTableEnum =
 
 export const RolePermission_FieldEnum = {
   rolePermissionId: 'rolePermissionId',
+  role: 'role',
   permissionFeature: 'permissionFeature',
   permissionAction: 'permissionAction',
   createdAt: 'createdAt',
@@ -279,6 +280,7 @@ export type RolePermission_FieldEnum =
 
 export const RolePermission_FieldWithTableEnum = {
   rolePermissionId: 'null.rolePermissionId',
+  role: 'null.role',
   permissionFeature: 'null.permissionFeature',
   permissionAction: 'null.permissionAction',
   createdAt: 'null.createdAt',
@@ -289,7 +291,7 @@ export type RolePermission_FieldWithTableEnum =
   (typeof RolePermission_FieldWithTableEnum)[keyof typeof RolePermission_FieldWithTableEnum];
 
 export const User_FieldEnum = {
-  userId: 'userId',
+  id: 'id',
   firstName: 'firstName',
   lastName: 'lastName',
   email: 'email',
@@ -303,7 +305,7 @@ export type User_FieldEnum =
   (typeof User_FieldEnum)[keyof typeof User_FieldEnum];
 
 export const User_FieldWithTableEnum = {
-  userId: 'null.userId',
+  id: 'null.id',
   firstName: 'null.firstName',
   lastName: 'null.lastName',
   email: 'null.email',
@@ -317,7 +319,7 @@ export type User_FieldWithTableEnum =
   (typeof User_FieldWithTableEnum)[keyof typeof User_FieldWithTableEnum];
 
 export const UserLocation_FieldEnum = {
-  userLocationId: 'userLocationId',
+  id: 'id',
   userId: 'userId',
   phone: 'phone',
   address: 'address',
@@ -326,7 +328,7 @@ export type UserLocation_FieldEnum =
   (typeof UserLocation_FieldEnum)[keyof typeof UserLocation_FieldEnum];
 
 export const UserLocation_FieldWithTableEnum = {
-  userLocationId: 'null.userLocationId',
+  id: 'null.id',
   userId: 'null.userId',
   phone: 'null.phone',
   address: 'null.address',
@@ -338,7 +340,7 @@ export const DB_TableEnum = {
   Brand: 'Brand',
   CartItem: 'CartItem',
   CartSession: 'CartSession',
-  Category: 'category',
+  Category: 'Category',
   Order: 'Order',
   OrderItem: 'OrderItem',
   Product: 'Product',

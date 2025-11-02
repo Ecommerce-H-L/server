@@ -14,7 +14,7 @@ import type {
 } from './enums';
 
 export type Brand = {
-  brandId: string;
+  id: string;
   brandName: string;
   description: string | null;
   createdAt: Generated<Timestamp>;
@@ -24,21 +24,21 @@ export type Brand = {
   deletedAt: Timestamp | null;
 };
 export type CartItem = {
-  cartItemId: string;
+  id: string;
   cartSessionId: string;
   referenceId: string;
   referenceType: ReferenceType;
-  quantity: number;
+  quantity: Generated<number>;
   note: string | null;
 };
 export type CartSession = {
-  cartSessionId: string;
+  id: string;
   userId: string;
-  baseTotalPrice: string;
-  totalTax: string;
+  baseTotalPrice: Generated<string>;
+  totalTax: Generated<string>;
 };
 export type Category = {
-  categoryId: string;
+  id: string;
   categoryName: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -47,16 +47,16 @@ export type Category = {
   updatedById: string | null;
 };
 export type Order = {
-  orderId: string;
+  id: string;
   userId: string;
-  orderStatus: OrderStatus;
-  paymentMethod: PaymentMethod;
-  paymentStatus: PaymentStatus;
+  orderStatus: Generated<OrderStatus>;
+  paymentMethod: Generated<PaymentMethod>;
+  paymentStatus: Generated<PaymentStatus>;
   paidAt: Timestamp | null;
   evidencePath: string | null;
   totalTax: Generated<string>;
-  baseTotalPrice: string;
-  totalAmountDue: string;
+  baseTotalPrice: Generated<string>;
+  totalAmountDue: Generated<string>;
   note: string | null;
   userPhone: string | null;
   userAddress: string | null;
@@ -66,21 +66,21 @@ export type Order = {
   deletedAt: Timestamp | null;
 };
 export type OrderItem = {
-  orderItemId: string;
+  id: string;
   orderId: string;
   orderItemName: string;
   referenceId: string;
   referenceType: ReferenceType;
-  quantity: number;
-  price: string;
+  quantity: Generated<number>;
+  price: Generated<string>;
   note: string | null;
 };
 export type Product = {
-  productId: string;
+  id: string;
   productName: string;
   productType: string;
-  price: string;
-  quantity: number;
+  price: Generated<string>;
+  quantity: Generated<number>;
   usageInstructions: string | null;
   description: string | null;
   ingredients: string | null;
@@ -92,7 +92,7 @@ export type Product = {
   updatedById: string | null;
 };
 export type ProductCategory = {
-  productCategoryId: string;
+  id: string;
   productId: string;
   categoryId: string;
   createdAt: Generated<Timestamp>;
@@ -102,7 +102,7 @@ export type ProductCategory = {
   deletedAt: Timestamp | null;
 };
 export type ProductImage = {
-  productImageId: string;
+  id: string;
   productId: string;
   imagePath: string;
   createdAt: Generated<Timestamp>;
@@ -119,6 +119,7 @@ export type RefreshToken = {
 };
 export type RolePermission = {
   rolePermissionId: string;
+  role: UserRole;
   permissionFeature: string;
   permissionAction: string;
   createdAt: Generated<Timestamp>;
@@ -126,18 +127,18 @@ export type RolePermission = {
   deletedAt: Timestamp | null;
 };
 export type User = {
-  userId: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
   passwordHash: string;
-  role: UserRole;
+  role: Generated<UserRole>;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   deletedAt: Timestamp | null;
 };
 export type UserLocation = {
-  userLocationId: string;
+  id: string;
   userId: string;
   phone: string;
   address: string;
@@ -146,7 +147,7 @@ export type DB = {
   Brand: Brand;
   CartItem: CartItem;
   CartSession: CartSession;
-  category: Category;
+  Category: Category;
   Order: Order;
   OrderItem: OrderItem;
   Product: Product;
