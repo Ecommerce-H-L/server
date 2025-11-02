@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -7,10 +7,11 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule } from './common/common.module';
+import { TokenService } from './common/services';
 import { Env, validateEnv } from './config/env';
+import { AuthModule } from './routes/auth/auth.module';
 import { HealthController } from './routes/health/health.controller';
 import { HealthModule } from './routes/health/health.module';
-import { PostsModule } from './routes/posts/posts.module';
 
 @Module({
   imports: [
@@ -52,8 +53,8 @@ import { PostsModule } from './routes/posts/posts.module';
     }),
     HealthModule,
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
-    PostsModule,
     CommonModule,
+    AuthModule,
   ],
   controllers: [AppController, HealthController],
   providers: [
@@ -62,6 +63,11 @@ import { PostsModule } from './routes/posts/posts.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: ClassSerializerInterceptor,
+    },
+    TokenService,
   ],
 })
 export class AppModule {}

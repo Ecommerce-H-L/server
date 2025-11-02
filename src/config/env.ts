@@ -9,6 +9,10 @@ export const EnvSchema = z.object({
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
     .default('info'),
   DATABASE_URL: z.string(),
+  ACCESS_TOKEN_SECRET: z.string().min(1),
+  ACCESS_TOKEN_EXPIRES_IN: z.string().default('3600s'),
+  REFRESH_TOKEN_SECRET: z.string().min(1),
+  REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
