@@ -6,7 +6,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommonModule } from './common/common.module';
+import { CommonModule } from './common/modules/common.module';
 import { TokenService } from './common/services';
 import { Env, validateEnv } from './config/env';
 import { AuthModule } from './routes/auth/auth.module';
