@@ -12,6 +12,7 @@ import { Env, validateEnv } from './config/env';
 import { AuthModule } from './routes/auth/auth.module';
 import { HealthController } from './routes/health/health.controller';
 import { HealthModule } from './routes/health/health.module';
+import { UserModule } from './routes/user/user.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { HealthModule } from './routes/health/health.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     CommonModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController, HealthController],
   providers: [

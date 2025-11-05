@@ -13,6 +13,7 @@ export const EnvSchema = z.object({
   ACCESS_TOKEN_EXPIRES_IN: z.string().default('3600s'),
   REFRESH_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
+  SECRET_API_KEY: z.string().min(1),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
