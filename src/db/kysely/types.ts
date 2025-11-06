@@ -9,6 +9,8 @@ import type {
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
+  PermissionAction,
+  PermissionFeature,
   ReferenceType,
   UserRole,
 } from './enums';
@@ -119,9 +121,9 @@ export type RefreshToken = {
 };
 export type RolePermission = {
   rolePermissionId: string;
-  role: UserRole;
-  permissionFeature: string;
-  permissionAction: string;
+  role: Generated<UserRole>;
+  permissionFeature: Generated<PermissionFeature>;
+  permissionAction: Generated<PermissionAction>;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   deletedAt: Timestamp | null;

@@ -31,3 +31,31 @@ export const ReferenceType = {
   PACKAGE: 'PACKAGE',
 } as const;
 export type ReferenceType = (typeof ReferenceType)[keyof typeof ReferenceType];
+export const PermissionFeature = {
+  USER: 'USER',
+  PRODUCT: 'PRODUCT',
+  PRODUCT_IMAGE: 'PRODUCT_IMAGE',
+  BRAND: 'BRAND',
+  CATEGORY: 'CATEGORY',
+  ORDER: 'ORDER',
+  ORDER_ITEM: 'ORDER_ITEM',
+  CART: 'CART',
+  CART_ITEM: 'CART_ITEM',
+  ROLE_PERMISSION: 'ROLE_PERMISSION',
+} as const;
+export type PermissionFeature =
+  (typeof PermissionFeature)[keyof typeof PermissionFeature];
+export const PermissionAction = {
+  CREATE: 'CREATE',
+  READ: 'READ',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  LIST: 'LIST',
+  UPLOAD: 'UPLOAD',
+  CHECKOUT: 'CHECKOUT',
+  CANCEL: 'CANCEL',
+  APPROVE: 'APPROVE',
+  MANAGE: 'MANAGE',
+} as const;
+export type PermissionAction =
+  (typeof PermissionAction)[keyof typeof PermissionAction];

@@ -1,5 +1,7 @@
+import type { User } from '@prisma/client';
+
 export interface TokenPayload {
-  userId: string;
+  user: Pick<User, 'email' | 'id' | 'firstName' | 'lastName' | 'role'>;
   iat: number;
   exp: number;
 }

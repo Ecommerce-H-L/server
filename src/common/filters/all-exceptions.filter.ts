@@ -5,6 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import pino from 'pino';
 
 interface UnhandledException {
   name: string;
@@ -28,7 +29,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
             message: (exception as UnhandledException)?.message,
           };
 
-    req.log?.error({ err: exception }, 'Unhandled exception');
+    pino().error({ err: exception }, 'Unhandled exception');
 
     res
       .status(status)

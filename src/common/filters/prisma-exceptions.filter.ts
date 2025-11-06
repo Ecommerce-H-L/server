@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
+import pino from 'pino';
 
 import {
   isNotFoundPrismaError,
@@ -19,7 +20,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
 
-    req.log?.error({ err: e }, 'Prisma error');
+    pino().error({ err: e, path: req.path }, 'Prisma exception');
 
     if (isUniqueConstraintPrismaError(e)) {
       const targets = e.meta?.target;

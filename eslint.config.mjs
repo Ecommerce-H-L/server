@@ -60,6 +60,7 @@ export default tseslint.config(
           argsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       curly: ['error', 'all'],
       eqeqeq: ['error', 'smart'],

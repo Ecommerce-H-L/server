@@ -26,5 +26,8 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": false
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }

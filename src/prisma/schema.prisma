@@ -57,6 +57,29 @@ enum ReferenceType {
   PACKAGE
 }
 
+enum PermissionFeature {
+  USER
+  PRODUCT
+  PRODUCT_IMAGE
+  BRAND
+  CATEGORY
+  ORDER
+  ORDER_ITEM
+  CART
+  CART_ITEM
+  ROLE_PERMISSION
+}
+
+enum PermissionAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LIST
+  UPLOAD
+  MANAGE
+}
+
 //////////////////////
 // MODELS
 //////////////////////
@@ -109,20 +132,19 @@ model UserLocation {
 }
 
 model RolePermission {
-  rolePermissionId  String    @id @default(uuid()) @db.Uuid
-  role              UserRole
-  permissionFeature String    @db.VarChar(64) // TODO: convert to enum when stable
-  permissionAction  String    @db.VarChar(32) // TODO: convert to enum when stable
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  rolePermissionId  String            @id @default(uuid()) @db.Uuid
+  role              UserRole          @default(USER)
+  permissionFeature PermissionFeature @default(USER)
+  permissionAction  PermissionAction  @default(READ)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   deletedAt         DateTime?
 
-  // Prevent duplicate permission rows for the same role
   @@unique([role, permissionFeature, permissionAction])
 }
 
 model RefreshToken {
-  token     String   @id @db.VarChar(255)
+  token     String   @id @db.VarChar(500)
   userId    String   @db.Uuid
   expiredAt DateTime
   createdAt DateTime @default(now())

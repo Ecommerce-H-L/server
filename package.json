@@ -28,7 +28,8 @@
     "prisma:deploy": "npx prisma migrate deploy --schema ./src/prisma/schema.prisma",
     "prisma:deploy-test": "npx prisma migrate deploy --schema ./src/prisma/schema-test.prisma",
     "prisma:push": "cd src && npx prisma db push --schema ./prisma/schema.prisma",
-    "prisma:reset": "cd src && npx prisma migrate reset --schema ./prisma/schema.prisma"
+    "prisma:reset": "cd src && npx prisma migrate reset --schema ./prisma/schema.prisma",
+    "prisma:seed": "ts-node -r tsconfig-paths/register src/scripts/seed-data.script.ts"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yml,yaml}": [

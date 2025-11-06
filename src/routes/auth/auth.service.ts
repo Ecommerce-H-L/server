@@ -6,6 +6,7 @@ import {
 import { User } from '@prisma/client';
 import dayjs from 'dayjs';
 
+import { TokenPayload } from '@/common';
 import { HashingService, PrismaService, TokenService } from '@/common/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
@@ -25,7 +26,10 @@ export class AuthService {
       const hashedPassword = await this.hashingService.hash(password);
       const user = await this.prismaService.user.create({
         data: {
-          ...userData,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          role: userData.role,
+          email: userData.email,
           passwordHash: hashedPassword,
         },
       });
@@ -48,7 +52,12 @@ export class AuthService {
       where: { email: body.email },
     });
     if (!user) {
-      throw new UnauthorizedException('Email does not exist');
+      throw new UnauthorizedException([
+        {
+          field: 'email',
+          message: 'Email does not exist',
+        },
+      ]);
     }
     const isValidPassword = await this.hashingService.compare(
       body.password,
@@ -63,12 +72,20 @@ export class AuthService {
       ]);
     }
     const tokens = await this.generateTokens({
-      userId: user.id,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      },
     });
     return tokens;
   }
 
-  async generateTokens(payload: { userId: string }): Promise<LoginResponseDTO> {
+  async generateTokens(payload: {
+    user: TokenPayload['user'];
+  }): Promise<LoginResponseDTO> {
     const [accessToken, refreshToken] = await Promise.all([
       this.tokenService.signAccessToken(payload),
       this.tokenService.signRefreshToken(payload),
@@ -81,7 +98,7 @@ export class AuthService {
     await this.prismaService.refreshToken.create({
       data: {
         token: refreshToken,
-        userId: payload.userId,
+        userId: payload.user.id,
         expiredAt: dayjs.unix(decodedRefreshToken.exp ?? 0).toISOString(),
       },
     });
@@ -95,17 +112,15 @@ export class AuthService {
         where: { token: refreshToken },
       });
 
-      const decodedToken = await this.tokenService.verifyRefreshToken<{
-        userId: string;
-        exp: number;
-      }>(refreshToken);
+      const decodedToken =
+        await this.tokenService.verifyRefreshToken<TokenPayload>(refreshToken);
 
       if (dayjs().isAfter(dayjs.unix(decodedToken.exp))) {
         throw new UnauthorizedException('Refresh token has expired');
       }
 
       const tokens = await this.generateTokens({
-        userId: decodedToken.userId,
+        user: decodedToken.user,
       });
 
       await this.prismaService.refreshToken.delete({

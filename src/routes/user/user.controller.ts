@@ -18,16 +18,24 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { PermissionAction, PermissionFeature } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 
 import type { TokenPayload } from '@/common';
-import { ActiveUser, Auth, AUTH_TYPE, AuthenticationGuard } from '@/common';
+import {
+  ActiveUser,
+  Auth,
+  AUTH_TYPE,
+  AuthenticationGuard,
+  Permissions,
+  RbacGuard,
+} from '@/common';
 
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, RbacGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('users')
 @ApiBearerAuth()
@@ -46,7 +54,12 @@ export class UserController {
     return plainToInstance(UserEntity, result);
   }
 
+  @Permissions({
+    feature: PermissionFeature.USER,
+    action: PermissionAction.LIST,
+  })
   @Get()
+  @Patch(':id')
   @ApiOkResponse({
     type: UserEntity,
     isArray: true,
@@ -69,11 +82,15 @@ export class UserController {
       },
     },
   })
-  async getCurrent(@ActiveUser() user: TokenPayload) {
-    const result = await this.userService.findOne(user.userId);
+  async getCurrent(@ActiveUser('user') user: TokenPayload['user']) {
+    const result = await this.userService.findOne(user.id);
     return plainToInstance(UserEntity, result);
   }
 
+  @Permissions({
+    feature: PermissionFeature.USER,
+    action: PermissionAction.READ,
+  })
   @Get(':id')
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiOkResponse({ type: UserEntity, description: 'User found' })
@@ -84,6 +101,10 @@ export class UserController {
     return plainToInstance(UserEntity, result);
   }
 
+  @Permissions({
+    feature: PermissionFeature.USER,
+    action: PermissionAction.UPDATE,
+  })
   @Patch(':id')
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiOkResponse({ type: UserEntity, description: 'Updated user' })
@@ -95,6 +116,10 @@ export class UserController {
     return plainToInstance(UserEntity, result);
   }
 
+  @Permissions({
+    feature: PermissionFeature.USER,
+    action: PermissionAction.DELETE,
+  })
   @Delete(':id')
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @ApiOkResponse({ type: UserEntity, description: 'Deleted user' })

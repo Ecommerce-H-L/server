@@ -7,6 +7,7 @@ import {
 import { Request } from 'express';
 
 import { REQUEST_USER_KEY } from '../constants/auth.constant';
+import { TokenPayload } from '../interfaces';
 import { TokenService } from '../services';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class AccessTokenGuard implements CanActivate {
 
     try {
       const decodedAccessToken =
-        await this.tokenService.verifyAccessToken(accessToken);
+        await this.tokenService.verifyAccessToken<TokenPayload>(accessToken);
       req[REQUEST_USER_KEY] = decodedAccessToken;
       return true;
     } catch {
