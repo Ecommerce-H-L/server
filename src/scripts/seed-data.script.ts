@@ -96,7 +96,6 @@ const USER_PERMS: [Feature, Action][] = [
   [Feature.ORDER, Action.CREATE],
   [Feature.ORDER, Action.LIST],
   [Feature.ORDER, Action.READ],
-  [Feature.ORDER, Action.CANCEL],
   [Feature.ORDER_ITEM, Action.LIST],
   [Feature.ORDER_ITEM, Action.READ],
 

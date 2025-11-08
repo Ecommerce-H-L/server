@@ -52,9 +52,6 @@ export const PermissionAction = {
   DELETE: 'DELETE',
   LIST: 'LIST',
   UPLOAD: 'UPLOAD',
-  CHECKOUT: 'CHECKOUT',
-  CANCEL: 'CANCEL',
-  APPROVE: 'APPROVE',
   MANAGE: 'MANAGE',
 } as const;
 export type PermissionAction =
