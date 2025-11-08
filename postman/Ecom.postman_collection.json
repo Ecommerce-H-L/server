@@ -1,0 +1,409 @@
+{
+  "info": {
+    "_postman_id": "3edc5dd1-15a5-4768-bb38-8401519fbcf0",
+    "name": "Ecom",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36307444",
+    "_collection_link": "https://martian-firefly-811010.postman.co/workspace/My-Workspace~8b4f0c36-ce4b-41b9-83a6-a2d56a6be59e/collection/36307444-3edc5dd1-15a5-4768-bb38-8401519fbcf0?action=share&source=collection_link&creator=36307444"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// --- Parse response (email/id come from here) ---\r",
+                  "let res = {};\r",
+                  "try { res = pm.response.json(); } catch (_) {}\r",
+                  "\r",
+                  "const newId    = res?.data?.id;\r",
+                  "const newEmail = res?.data?.email;\r",
+                  "\r",
+                  "// --- Read password from the request body (not returned by API) ---\r",
+                  "function getReqField(name) {\r",
+                  "  const body = pm.request.body;\r",
+                  "\r",
+                  "  if (!body) return undefined;\r",
+                  "\r",
+                  "  // raw JSON\r",
+                  "  if (body.mode === 'raw' && body.raw) {\r",
+                  "    try {\r",
+                  "      const json = JSON.parse(body.raw);\r",
+                  "      return json?.[name];\r",
+                  "    } catch { /* ignore */ }\r",
+                  "  }\r",
+                  "\r",
+                  "  // x-www-form-urlencoded\r",
+                  "  if (body.mode === 'urlencoded' && body.urlencoded) {\r",
+                  "    const item = body.urlencoded.find(i => !i.disabled && i.key === name);\r",
+                  "    return item?.value;\r",
+                  "  }\r",
+                  "\r",
+                  "  // form-data\r",
+                  "  if (body.mode === 'formdata' && body.formdata) {\r",
+                  "    const item = body.formdata.find(i => !i.disabled && i.key === name);\r",
+                  "    return item?.value;\r",
+                  "  }\r",
+                  "\r",
+                  "  return undefined;\r",
+                  "}\r",
+                  "\r",
+                  "const newPassword =\r",
+                  "  getReqField('password') ??\r",
+                  "  getReqField('confirmPassword'); // if you sent confirmPassword\r",
+                  "\r",
+                  "// --- Save to the CURRENT ENVIRONMENT ---\r",
+                  "if (newEmail) pm.environment.set('newAccountEmail', newEmail);\r",
+                  "if (newPassword) pm.environment.set('newAccountPassword', newPassword);\r",
+                  "if (newId) pm.environment.set('newAccountId', newId);\r",
+                  "\r",
+                  "// --- Basic checks so you notice if something changed ---\r",
+                  "pm.test('Stored new account credentials', function () {\r",
+                  "  pm.expect(pm.environment.get('newAccountEmail'), 'email').to.be.a('string');\r",
+                  "  pm.expect(pm.environment.get('newAccountPassword'), 'password').to.be.a('string');\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"Long\",\r\n    \"lastName\": \"Truong\",\r\n    \"email\": \"longtruong26040212@gmail.com\",\r\n    \"role\": \"ADMIN\",\r\n    \"password\": \"123456789\",\r\n    \"confirmedPassword\": \"123456789\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Log in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Ensure JSON\r",
+                  "let json = {};\r",
+                  "try { json = pm.response.json(); } catch (e) { /* ignore */ }\r",
+                  "\r",
+                  "// Basic assertion (optional)\r",
+                  "pm.test('Created (201)', function () {\r",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "\r",
+                  "// Pull tokens from your exact shape\r",
+                  "const accessToken  = json?.data?.accessToken;\r",
+                  "const refreshToken = json?.data?.refreshToken;\r",
+                  "\r",
+                  "// Save as COLLECTION variables (safer than globals)\r",
+                  "if (accessToken) {\r",
+                  "  pm.environment.set('accessToken', accessToken);\r",
+                  "} else {\r",
+                  "  pm.test('accessToken present', () => pm.expect.fail('data.accessToken missing'));\r",
+                  "}\r",
+                  "\r",
+                  "if (refreshToken) {\r",
+                  "  pm.environment.set('refreshToken', refreshToken);\r",
+                  "} else {\r",
+                  "  pm.test('refreshToken present', () => pm.expect.fail('data.refreshToken missing'));\r",
+                  "}\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"{{adminEmail}}\",\r\n    \"password\": \"{{adminPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Ensure JSON\r",
+                  "let json = {};\r",
+                  "try { json = pm.response.json(); } catch (e) { /* ignore */ }\r",
+                  "\r",
+                  "// Basic assertion (optional)\r",
+                  "pm.test('Created (201)', function () {\r",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "\r",
+                  "// Pull tokens from your exact shape\r",
+                  "const accessToken  = json?.data?.accessToken;\r",
+                  "const refreshToken = json?.data?.refreshToken;\r",
+                  "\r",
+                  "// Save as COLLECTION variables (safer than globals)\r",
+                  "if (accessToken) {\r",
+                  "  pm.environment.set('accessToken', accessToken);\r",
+                  "} else {\r",
+                  "  pm.test('accessToken present', () => pm.expect.fail('data.accessToken missing'));\r",
+                  "}\r",
+                  "\r",
+                  "if (refreshToken) {\r",
+                  "  pm.environment.set('refreshToken', refreshToken);\r",
+                  "} else {\r",
+                  "  pm.test('refreshToken present', () => pm.expect.fail('data.refreshToken missing'));\r",
+                  "}\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh-token"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Log out",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Tests tab (Minimal) — remove stored tokens from environment\r",
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {\r",
+                  "  // Unset environment vars\r",
+                  "  pm.environment.unset('accessToken');\r",
+                  "  pm.environment.unset('refreshToken');\r",
+                  "\r",
+                  "  pm.test('Logout succeeded and tokens removed', () => {\r",
+                  "    pm.expect(pm.environment.get('accessToken')).to.be.oneOf([null, undefined]);\r",
+                  "    pm.expect(pm.environment.get('refreshToken')).to.be.oneOf([null, undefined]);\r",
+                  "  });\r",
+                  "} else {\r",
+                  "  pm.test('Logout failed', () => {\r",
+                  "    pm.expect.fail(`Logout returned ${pm.response.code}`);\r",
+                  "  });\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get all users",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/e4467ccb-eb86-40b1-bc88-979ae887d781",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "e4467ccb-eb86-40b1-bc88-979ae887d781"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update user by id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"lastName\": \"Ly\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/0c056650-b6c0-4f80-9707-ed8ad703ed24",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "0c056650-b6c0-4f80-9707-ed8ad703ed24"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user by id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"lastName\": \"Ly\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/92b04a7e-1d63-4b1d-a877-276f357d08f2",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "92b04a7e-1d63-4b1d-a877-276f357d08f2"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}
