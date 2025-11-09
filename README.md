@@ -9,7 +9,7 @@ A NestJS 11 + TypeScript backend for an e‑commerce API. Uses Prisma (PostgreSQ
 Create a `.env` file in the project root (these values reflect your current setup):
 
 ```env
-PORT=3000
+PORT=5000
 NODE_ENV=development
 LOG_LEVEL=info
 DATABASE_URL="postgres://postgres:abc123@localhost:5434/ecommerce"
@@ -112,7 +112,7 @@ npm run prisma:reset
 
 Swagger UI is automatically available at:
 
-- [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+- [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 
 Or you can manually create the API docs in json for later use (like sharing):
 
@@ -128,7 +128,7 @@ npm run docs:print
 A Postman collection is included for quick testing. Import it into Postman (`File` -> `Import` -> `Select files`):
 
 - File path: `postman/Ecom.postman_collection.json`
-- Base URL variable: `{{baseUrl}}` → default to `http://localhost:3000`
+- Base URL variable: `{{baseUrl}}` → default to `http://localhost:5000`
 
 ---
 
