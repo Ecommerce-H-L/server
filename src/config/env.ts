@@ -9,7 +9,11 @@ export const EnvSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
     .default('development'),
-  PORT: z.coerce.number().int().positive().default(3000),
+  PORT: z.coerce.number().int().positive().default(5000),
+
+  THROTTLE_TTL: z.coerce.number().int().positive().default(60),
+  THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
+
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
     .default('info'),
