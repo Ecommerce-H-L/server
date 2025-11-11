@@ -1,12 +1,12 @@
 export const REQUEST_USER_KEY = 'user';
 
-export enum AUTH_TYPE {
+export enum AuthType {
   BEARER = 'Bearer',
   API_KEY = 'ApiKey',
   NONE = 'None',
 }
 
-export enum CONDITION_TYPE {
+export enum ConditionType {
   AND = 'and',
   OR = 'or',
 }
