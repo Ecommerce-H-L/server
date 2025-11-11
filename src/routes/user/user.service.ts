@@ -1,50 +1,25 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 
-import { PrismaService } from '@/common';
+import {
+  EmailAlreadyExistsException,
+  UserNotFoundException,
+} from '@/common/exceptions';
+import { HashingService, PrismaService } from '@/common/services';
 import { isUniqueConstraintPrismaError } from '@/utils';
 
-import { CreateUserDto, UpdateUserDto } from './user.dto';
-import { UserEntity } from './user.entity';
-
-function toEntity(
-  user: Prisma.UserGetPayload<{ select: typeof baseSelect }>,
-): UserEntity {
-  return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-    deletedAt: user.deletedAt ?? null,
-  };
-}
-
-const baseSelect = {
-  id: true,
-  firstName: true,
-  lastName: true,
-  email: true,
-  role: true,
-  createdAt: true,
-  updatedAt: true,
-  deletedAt: true,
-} satisfies Record<keyof UserEntity | 'deletedAt', true>;
+import { CreateUserDto, UpdateUserDto, UserEntity } from './';
+import { BASE_SELECT, toEntity } from './user.helper';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly hashingService: HashingService,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<UserEntity> {
-    const passwordHash = await bcrypt.hash(dto.password, 12);
+    const passwordHash = await this.hashingService.hash(dto.password);
     try {
       const created = await this.prisma.user.create({
         data: {
@@ -54,7 +29,7 @@ export class UserService {
           passwordHash,
           role: dto.role ?? UserRole.USER,
         },
-        select: baseSelect,
+        select: BASE_SELECT,
       });
       return toEntity(created);
     } catch (e) {
@@ -68,7 +43,7 @@ export class UserService {
   async findAll(): Promise<UserEntity[]> {
     const users = await this.prisma.user.findMany({
       where: { deletedAt: null },
-      select: baseSelect,
+      select: BASE_SELECT,
       orderBy: { createdAt: 'desc' },
     });
     return users.map(toEntity);
@@ -77,10 +52,10 @@ export class UserService {
   async findOne(id: string): Promise<UserEntity> {
     const user = await this.prisma.user.findFirst({
       where: { id, deletedAt: null },
-      select: baseSelect,
+      select: BASE_SELECT,
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new UserNotFoundException(id);
     }
     return toEntity(user);
   }
@@ -91,12 +66,12 @@ export class UserService {
       select: { id: true },
     });
     if (!existing) {
-      throw new NotFoundException('User not found');
+      throw new UserNotFoundException(id);
     }
 
     let passwordHash: string | undefined;
     if (dto.password) {
-      passwordHash = await bcrypt.hash(dto.password, 12);
+      passwordHash = await this.hashingService.hash(dto.password);
     }
 
     try {
@@ -109,12 +84,12 @@ export class UserService {
           ...(passwordHash ? { passwordHash } : {}),
           ...(dto.role ? { role: dto.role } : {}),
         },
-        select: baseSelect,
+        select: BASE_SELECT,
       });
       return toEntity(updated);
     } catch (e) {
       if (isUniqueConstraintPrismaError(e)) {
-        throw new ConflictException('Email is already in use');
+        throw new EmailAlreadyExistsException(dto.email);
       }
       throw e;
     }
@@ -123,16 +98,16 @@ export class UserService {
   async remove(id: string): Promise<UserEntity> {
     const existing = await this.prisma.user.findFirst({
       where: { id, deletedAt: null },
-      select: baseSelect,
+      select: BASE_SELECT,
     });
     if (!existing) {
-      throw new NotFoundException('User not found');
+      throw new UserNotFoundException(id);
     }
 
     const removed = await this.prisma.user.update({
       where: { id },
       data: { deletedAt: new Date() },
-      select: baseSelect,
+      select: BASE_SELECT,
     });
     return toEntity(removed);
   }

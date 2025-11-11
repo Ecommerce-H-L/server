@@ -25,8 +25,8 @@ import type { TokenPayload } from '@/common';
 import {
   ActiveUser,
   Auth,
-  AUTH_TYPE,
   AuthenticationGuard,
+  AuthType,
   Permissions,
   RbacGuard,
 } from '@/common';
@@ -39,7 +39,7 @@ import { UserService } from './user.service';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('users')
 @ApiBearerAuth()
-@Auth(AUTH_TYPE.BEARER)
+@Auth(AuthType.BEARER)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -59,7 +59,6 @@ export class UserController {
     action: PermissionAction.LIST,
   })
   @Get()
-  @Patch(':id')
   @ApiOkResponse({
     type: UserEntity,
     isArray: true,
