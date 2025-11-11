@@ -1,18 +1,16 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommonModule } from './common/modules/common.module';
-import { TokenService } from './common/services';
+import { CommonModule, TokenService } from './common';
 import { Env, validateEnv } from './config/env';
-import { AuthModule } from './routes/auth/auth.module';
-import { HealthController } from './routes/health/health.controller';
-import { HealthModule } from './routes/health/health.module';
-import { UserModule } from './routes/user/user.module';
+import { AuthModule } from './routes/auth';
+import { HealthController, HealthModule } from './routes/health';
+import { UserModule } from './routes/user';
 
 @Module({
   imports: [
@@ -53,7 +51,16 @@ import { UserModule } from './routes/user/user.module';
       },
     }),
     HealthModule,
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<Env, true>) => [
+        {
+          ttl: config.get('THROTTLE_TTL', { infer: true }),
+          limit: config.get('THROTTLE_LIMIT', { infer: true }),
+        },
+      ],
+    }),
     CommonModule,
     AuthModule,
     UserModule,
@@ -66,7 +73,7 @@ import { UserModule } from './routes/user/user.module';
       useClass: ThrottlerGuard,
     },
     {
-      provide: 'APP_INTERCEPTOR',
+      provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
     TokenService,
