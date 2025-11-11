@@ -1,12 +1,16 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import dayjs from 'dayjs';
 
-import { TokenPayload } from '@/common';
+import { ErrorCode, TokenPayload } from '@/common';
+import {
+  AuthException,
+  EmailAlreadyExistsException,
+  InvalidCredentialsException,
+  TokenExpiredException,
+  TokenInvalidException,
+  TokenRevokedException,
+} from '@/common/exceptions';
 import { HashingService, PrismaService, TokenService } from '@/common/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
@@ -36,12 +40,7 @@ export class AuthService {
       return user;
     } catch (error) {
       if (isUniqueConstraintPrismaError(error)) {
-        throw new UnprocessableEntityException([
-          {
-            field: 'email',
-            message: 'Email is already in use',
-          },
-        ]);
+        throw new EmailAlreadyExistsException(body.email);
       }
       throw error;
     }
@@ -52,24 +51,14 @@ export class AuthService {
       where: { email: body.email },
     });
     if (!user) {
-      throw new UnauthorizedException([
-        {
-          field: 'email',
-          message: 'Email does not exist',
-        },
-      ]);
+      throw new InvalidCredentialsException();
     }
     const isValidPassword = await this.hashingService.compare(
       body.password,
       user.passwordHash,
     );
     if (!isValidPassword) {
-      throw new UnprocessableEntityException([
-        {
-          field: 'password',
-          message: 'Password is incorrect',
-        },
-      ]);
+      throw new InvalidCredentialsException();
     }
     const tokens = await this.generateTokens({
       user: {
@@ -116,7 +105,7 @@ export class AuthService {
         await this.tokenService.verifyRefreshToken<TokenPayload>(refreshToken);
 
       if (dayjs().isAfter(dayjs.unix(decodedToken.exp))) {
-        throw new UnauthorizedException('Refresh token has expired');
+        throw new TokenExpiredException('refresh');
       }
 
       const tokens = await this.generateTokens({
@@ -130,15 +119,27 @@ export class AuthService {
       return tokens;
     } catch (error) {
       if (isNotFoundPrismaError(error)) {
-        throw new UnauthorizedException('Refresh token has been revoked');
+        throw new TokenRevokedException();
       }
-      throw new UnauthorizedException(error);
+      throw new TokenInvalidException('Fail to refresh tokens');
     }
   }
 
   async logout(refreshToken: string) {
     try {
-      await this.tokenService.verifyRefreshToken(refreshToken);
+      const stored = await this.prismaService.refreshToken.findUnique({
+        where: { token: refreshToken },
+      });
+      if (!stored) {
+        throw new TokenExpiredException('refresh');
+      }
+
+      try {
+        await this.tokenService.verifyRefreshToken(refreshToken);
+      } catch (err) {
+        throw new TokenInvalidException('Refresh token is invalid or expired');
+      }
+
       await this.prismaService.refreshToken.delete({
         where: {
           token: refreshToken,
@@ -148,9 +149,16 @@ export class AuthService {
       return { message: 'Logout successfully' };
     } catch (error) {
       if (isNotFoundPrismaError(error)) {
-        throw new UnauthorizedException('Refresh token has been revoked');
+        throw new TokenRevokedException();
       }
-      throw new UnauthorizedException();
+      if (error instanceof AuthException) {
+        throw error;
+      }
+      throw new AuthException(
+        'Logout failed due to an unknown error',
+        ErrorCode.LOGOUT_FAILED,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

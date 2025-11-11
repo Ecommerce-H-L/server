@@ -1,70 +1,94 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { IsString, Length } from 'class-validator';
+import { Exclude, Transform, Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 import { Match } from '@/common/decorators';
 import type { UserRole } from '@/db/kysely/enums';
 
-export class LoginDTO {
-  @ApiProperty()
+export class RegisterBodyDTO {
+  @ApiProperty({ maxLength: 254 })
+  @Transform(({ value }: { value: string }) =>
+    value?.toLowerCase()?.normalize('NFKC')?.trim(),
+  )
+  @IsNotEmpty({ message: 'Email cannot be empty' })
+  @IsEmail({}, { message: 'Invalid email address' })
+  @MaxLength(254, { message: 'Email must be at most 254 characters' })
+  email!: string;
+
+  @ApiProperty({ minLength: 12, maxLength: 128 })
+  @Transform(({ value }: { value: string }) => value?.normalize('NFKC')?.trim())
   @IsString()
-  email: string;
+  @IsNotEmpty({ message: 'Password cannot be empty' })
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @MaxLength(128, { message: 'Password must be at most 128 characters' })
+  @Matches(/^\S+$/, { message: 'Password cannot contain spaces' })
+  @Matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+/, {
+    message: 'Include uppercase, lowercase, number, and symbol',
+  })
+  password!: string;
 
   @ApiProperty()
   @IsString()
-  @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
-  password: string;
-}
-
-export class RegisterBodyDTO extends LoginDTO {
-  @ApiProperty()
-  @IsString()
-  firstName: string;
+  firstName!: string;
 
   @ApiProperty()
   @IsString()
-  lastName: string;
+  lastName!: string;
 
   @ApiProperty()
   @IsString()
-  role: UserRole;
+  role!: UserRole;
 
   @ApiProperty()
   @Match('password', {
     message: 'Confirm password does not match with password',
   })
-  confirmedPassword: string;
+  confirmedPassword!: string;
 }
 
 export class RegisterUserData {
   @ApiProperty()
-  id: string;
+  id!: string;
 
   @ApiProperty()
-  email: string;
+  email!: string;
 
   @ApiProperty()
-  firstName: string;
+  firstName!: string;
 
   @ApiProperty()
-  lastName: string;
+  lastName!: string;
 
   @ApiProperty()
-  role: UserRole;
+  role!: UserRole;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt!: Date;
+
+  @Exclude()
+  passwordHash!: string;
 }
 
 export class RegisterResponseDTO {
   @ApiProperty({ type: RegisterUserData })
-  data: RegisterUserData;
+  @Type(() => RegisterUserData)
+  user!: RegisterUserData;
 
-  @Exclude()
-  passwordHash: string;
+  @ApiProperty()
+  accessToken!: string;
+
+  @ApiProperty()
+  refreshToken!: string;
 
   constructor(partial: Partial<RegisterResponseDTO>) {
     Object.assign(this, partial);
@@ -72,21 +96,27 @@ export class RegisterResponseDTO {
 }
 
 export class LoginBodyDTO {
-  @ApiProperty()
-  @IsString()
-  email: string;
+  @ApiProperty({ maxLength: 254 })
+  @Transform(({ value }: { value: string }) =>
+    value?.toLowerCase()?.normalize('NFKC')?.trim(),
+  )
+  @IsNotEmpty({ message: 'Email cannot be empty' })
+  @IsEmail({}, { message: 'Invalid email address' })
+  email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ minLength: 8, maxLength: 128 })
+  @Transform(({ value }: { value: string }) => value?.normalize('NFKC')?.trim())
   @IsString()
-  password: string;
+  @IsNotEmpty({ message: 'Password cannot be empty' })
+  password!: string;
 }
 
 export class LoginResponseDTO {
   @ApiProperty()
-  accessToken: string;
+  accessToken!: string;
 
   @ApiProperty()
-  refreshToken: string;
+  refreshToken!: string;
 
   constructor(partial: Partial<LoginResponseDTO>) {
     Object.assign(this, partial);
@@ -96,7 +126,7 @@ export class LoginResponseDTO {
 export class RefreshTokenDTO {
   @ApiProperty()
   @IsString()
-  refreshToken: string;
+  refreshToken!: string;
 }
 
 export class RefreshTokenResponseDTO extends LoginResponseDTO {

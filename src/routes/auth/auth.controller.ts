@@ -1,19 +1,5 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-
-import { AccessTokenGuard } from '@/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import {
   LoginBodyDTO,
@@ -35,8 +21,9 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse({ type: RegisterResponseDTO })
   async register(@Body() body: RegisterBodyDTO): Promise<RegisterResponseDTO> {
-    const result = await this.authService.register(body);
-    return new RegisterResponseDTO(result);
+    const user = await this.authService.register(body);
+    const tokens = await this.authService.generateTokens({ user });
+    return new RegisterResponseDTO({ user, ...tokens });
   }
 
   @Post('login')
@@ -46,8 +33,6 @@ export class AuthController {
     return new LoginResponseDTO(result);
   }
 
-  @UseGuards(AccessTokenGuard)
-  @ApiBearerAuth()
   @ApiOkResponse({ type: RefreshTokenResponseDTO })
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
