@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 
 import {
   LoginBodyDTO,
@@ -10,6 +11,7 @@ import {
   RefreshTokenResponseDTO,
   RegisterBodyDTO,
   RegisterResponseDTO,
+  RegisterUserData,
 } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -21,7 +23,11 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse({ type: RegisterResponseDTO })
   async register(@Body() body: RegisterBodyDTO): Promise<RegisterResponseDTO> {
-    const user = await this.authService.register(body);
+    const user = plainToInstance(
+      RegisterUserData,
+      await this.authService.register(body),
+    );
+
     const tokens = await this.authService.generateTokens({ user });
     return new RegisterResponseDTO({ user, ...tokens });
   }

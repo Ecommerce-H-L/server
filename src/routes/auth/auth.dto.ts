@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -81,7 +81,6 @@ export class RegisterUserData {
 
 export class RegisterResponseDTO {
   @ApiProperty({ type: RegisterUserData })
-  @Type(() => RegisterUserData)
   user!: RegisterUserData;
 
   @ApiProperty()
