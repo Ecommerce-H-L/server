@@ -3,40 +3,42 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import pino from 'pino';
 
-interface UnhandledException {
-  name: string;
-  message: string;
-}
+import { LoggerService } from '@/common/services';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  constructor(private readonly logger: LoggerService) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const res = ctx.getResponse<Response>();
-    const req = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
     const status =
-      exception instanceof HttpException ? exception.getStatus() : 500;
-    const body =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const message =
       exception instanceof HttpException
         ? exception.getResponse()
-        : {
-            name: (exception as UnhandledException)?.name,
-            message: (exception as UnhandledException)?.message,
-          };
+        : 'Internal server error';
 
-    pino().error({ err: exception }, 'Unhandled exception');
+    this.logger.error(
+      `Exception thrown: ${JSON.stringify(message)}`,
+      (exception as Error).stack,
+      'AllExceptionsFilter',
+    );
 
-    res
-      .status(status)
-      .json(
-        typeof body === 'string'
-          ? { statusCode: status, message: body }
-          : { statusCode: status, ...body },
-      );
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      message,
+    });
   }
 }

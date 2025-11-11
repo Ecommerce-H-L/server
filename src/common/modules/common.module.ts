@@ -4,6 +4,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { AccessTokenGuard, ApiKeyGuard, AuthenticationGuard } from '../guards';
 import { HashingService, PrismaService, TokenService } from '../services';
+import { LoggerService } from '../services/logger.service';
 
 const services = [
   PrismaService,
@@ -12,6 +13,7 @@ const services = [
   JwtService,
   AccessTokenGuard,
   ApiKeyGuard,
+  LoggerService,
 ];
 
 @Global()

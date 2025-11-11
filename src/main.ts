@@ -47,7 +47,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(app.get(Logger)));
 
   app.useGlobalInterceptors(new TransformInterceptor());
 
