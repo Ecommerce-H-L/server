@@ -144,7 +144,7 @@ model RolePermission {
 }
 
 model RefreshToken {
-  token     String   @id @db.VarChar(500)
+  token     String   @id @db.VarChar(1000)
   userId    String   @db.Uuid
   expiredAt DateTime
   createdAt DateTime @default(now())
