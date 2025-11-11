@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { REQUEST_USER_KEY } from '../constants/auth.constant';
+import { REQUEST_USER_KEY } from '../constants';
 import { TokenPayload } from '../interfaces';
 import { TokenService } from '../services';
 

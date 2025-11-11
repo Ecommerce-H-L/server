@@ -1,10 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 import type { PermissionAction, PermissionFeature } from '@prisma/client';
 
-import {
-  PERMISSIONS_KEY,
-  RequireOption,
-} from '../constants/permission.constant';
+import { PERMISSIONS_KEY, RequireOption } from '../constants';
 
 export interface PermissionsDecorator {
   perms: RequiredPermission[];

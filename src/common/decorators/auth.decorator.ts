@@ -1,6 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
-import type { AuthCondition, AuthType } from '../interfaces/auth.interface';
+import type { AuthType } from '../constants';
+import type { AuthCondition } from '../interfaces';
 
 export const AUTH_TYPE_KEY = 'authType';
 

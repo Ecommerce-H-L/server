@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { MESSAGES } from '@nestjs/core/constants';
 import { PermissionAction, PermissionFeature, UserRole } from '@prisma/client';
 import { Request } from 'express';
 
@@ -55,7 +56,7 @@ export class RbacGuard implements CanActivate {
         ? results.every(Boolean)
         : results.some(Boolean);
     if (!ok) {
-      throw new ForbiddenException('Insufficient permissions');
+      throw new ForbiddenException(MESSAGES);
     }
     return true;
   }
@@ -76,7 +77,6 @@ export class RbacGuard implements CanActivate {
       },
       select: { rolePermissionId: true },
     });
-    console.log(found);
     return !!found;
   }
 }

@@ -6,9 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { AUTH_TYPE, CONDITION_TYPE } from '../constants';
-import { AUTH_TYPE_KEY, AuthTypeDecorator } from '../decorators/auth.decorator';
-import { AuthType } from '../interfaces/auth.interface';
+import { AuthType, ConditionType } from '../constants';
+import { AUTH_TYPE_KEY, AuthTypeDecorator } from '../decorators';
 import { AccessTokenGuard } from './access-token.guard';
 import { ApiKeyGuard } from './api-key.guard';
 
@@ -22,9 +21,9 @@ export class AuthenticationGuard implements CanActivate {
 
   private authTypeGuard(authType: AuthType): CanActivate {
     const authTypeGuardMap: Record<AuthType, CanActivate> = {
-      [AUTH_TYPE.BEARER]: this.accessTokenGuard,
-      [AUTH_TYPE.API_KEY]: this.apiKeyGuard,
-      [AUTH_TYPE.NONE]: { canActivate: () => true },
+      [AuthType.BEARER]: this.accessTokenGuard,
+      [AuthType.API_KEY]: this.apiKeyGuard,
+      [AuthType.NONE]: { canActivate: () => true },
     };
     return authTypeGuardMap[authType];
   }
@@ -34,7 +33,7 @@ export class AuthenticationGuard implements CanActivate {
       this.reflector.getAllAndOverride<AuthTypeDecorator | undefined>(
         AUTH_TYPE_KEY,
         [context.getHandler(), context.getClass()],
-      ) ?? ({ authType: [AUTH_TYPE.NONE] } as AuthTypeDecorator);
+      ) ?? ({ authType: [AuthType.NONE] } as AuthTypeDecorator);
 
     const types = Array.isArray(authTypeValue.authType)
       ? authTypeValue.authType
@@ -44,7 +43,7 @@ export class AuthenticationGuard implements CanActivate {
 
     let error: Error | null = null;
 
-    if (authTypeValue.options?.condition === CONDITION_TYPE.OR) {
+    if (authTypeValue.options?.condition === ConditionType.OR) {
       for (const guard of guards) {
         const canActivate = await Promise.resolve(
           guard.canActivate(context),
@@ -59,7 +58,7 @@ export class AuthenticationGuard implements CanActivate {
       throw new UnauthorizedException(error);
     }
 
-    if (authTypeValue.options?.condition === CONDITION_TYPE.AND) {
+    if (authTypeValue.options?.condition === ConditionType.AND) {
       for (const guard of guards) {
         const canActivate = await guard.canActivate(context);
         if (!canActivate) {
