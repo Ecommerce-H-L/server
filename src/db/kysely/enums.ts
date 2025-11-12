@@ -1,36 +1,58 @@
-export const user_role = {
+export const UserRole = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   USER: 'USER',
 } as const;
-export type user_role = (typeof user_role)[keyof typeof user_role];
-export const order_status = {
-  created: 'created',
-  payment_pending: 'payment_pending',
-  completed: 'completed',
-  cancelled: 'cancelled',
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+export const OrderStatus = {
+  CREATED: 'CREATED',
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
 } as const;
-export type order_status = (typeof order_status)[keyof typeof order_status];
-export const payment_method = {
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+export const PaymentMethod = {
   COD: 'COD',
-  card: 'card',
-  cash: 'cash',
+  CARD: 'CARD',
+  CASH: 'CASH',
 } as const;
-export type payment_method =
-  (typeof payment_method)[keyof typeof payment_method];
-export const payment_status = {
-  unpaid: 'unpaid',
-  paid: 'paid',
-  payment_processing: 'payment_processing',
-  failed: 'failed',
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
+export const PaymentStatus = {
+  UNPAID: 'UNPAID',
+  PAID: 'PAID',
+  PROCESSING: 'PROCESSING',
+  FAILED: 'FAILED',
 } as const;
-export type payment_status =
-  (typeof payment_status)[keyof typeof payment_status];
-export const reference_type = {
-  product_type: 'product_type',
-  gift_card: 'gift_card',
-  membership: 'membership',
-  package: 'package',
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+export const ReferenceType = {
+  PRODUCT_TYPE: 'PRODUCT_TYPE',
+  GIFT_CARD: 'GIFT_CARD',
+  MEMBERSHIP: 'MEMBERSHIP',
+  PACKAGE: 'PACKAGE',
 } as const;
-export type reference_type =
-  (typeof reference_type)[keyof typeof reference_type];
+export type ReferenceType = (typeof ReferenceType)[keyof typeof ReferenceType];
+export const PermissionFeature = {
+  USER: 'USER',
+  PRODUCT: 'PRODUCT',
+  PRODUCT_IMAGE: 'PRODUCT_IMAGE',
+  BRAND: 'BRAND',
+  CATEGORY: 'CATEGORY',
+  ORDER: 'ORDER',
+  ORDER_ITEM: 'ORDER_ITEM',
+  CART: 'CART',
+  CART_ITEM: 'CART_ITEM',
+  ROLE_PERMISSION: 'ROLE_PERMISSION',
+} as const;
+export type PermissionFeature =
+  (typeof PermissionFeature)[keyof typeof PermissionFeature];
+export const PermissionAction = {
+  CREATE: 'CREATE',
+  READ: 'READ',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  LIST: 'LIST',
+  UPLOAD: 'UPLOAD',
+  MANAGE: 'MANAGE',
+} as const;
+export type PermissionAction =
+  (typeof PermissionAction)[keyof typeof PermissionAction];

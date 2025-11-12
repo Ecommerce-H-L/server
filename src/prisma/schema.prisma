@@ -1,6 +1,8 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  // Enables CREATE EXTENSION citext; for case-insensitive email & names
+  extensions = [citext()]
 }
 
 generator client {
@@ -22,10 +24,6 @@ generator custom_kysely {
   previewFeatures = ["postgresqlExtensions"]
 }
 
-//////////////////////
-// ENUMS
-//////////////////////
-
 enum UserRole {
   SUPER_ADMIN
   ADMIN
@@ -33,301 +31,327 @@ enum UserRole {
 }
 
 enum OrderStatus {
-  created
-  payment_pending
-  model User {
-    user_id       String     @id @db.VarChar
-    first_name    String      @db.VarChar
-    last_name     String      @db.VarChar
-    email         String      @db.VarChar
-    password_hash String      @db.VarChar
-    role          UserRole
+  CREATED
+  PENDING
+  COMPLETED
+  CANCELLED
+}
 
-    created_at    DateTime    @default(now())
-    updated_at    DateTime    @updatedAt
-    deleted_at    DateTime?
+enum PaymentMethod {
+  COD
+  CARD
+  CASH
+}
 
-    // relations
-    user_locations UserLocation[]
-    refresh_tokens RefreshToken[]
-    products_created Product[] @relation("product_createdBy")
-    products_updated Product[] @relation("product_updatedBy")
-    product_images_created ProductImages[] @relation("product_images_createdBy")
-    product_images_updated ProductImages[] @relation("product_images_updatedBy")
-    categories_created Category[] @relation("category_createdBy")
-    categories_updated Category[] @relation("category_updatedBy")
-    product_categories_created ProductCategory[] @relation("product_category_createdBy")
-    product_categories_updated ProductCategory[] @relation("product_category_updatedBy")
-    orders_updated Order[] @relation("order_updatedBy")
+enum PaymentStatus {
+  UNPAID
+  PAID
+  PROCESSING
+  FAILED
+}
 
-    // brand relations (opposite sides for brand.createdBy / brand.updatedBy)
-    brands_created Brand[] @relation("brand_createdBy")
-    brands_updated Brand[] @relation("brand_updatedBy")
+enum ReferenceType {
+  PRODUCT_TYPE
+  GIFT_CARD
+  MEMBERSHIP
+  PACKAGE
+}
 
-    // cart & order relations
-    cart_sessions CartSession[]
-    orders Order[]
+enum PermissionFeature {
+  USER
+  PRODUCT
+  PRODUCT_IMAGE
+  BRAND
+  CATEGORY
+  ORDER
+  ORDER_ITEM
+  CART
+  CART_ITEM
+  ROLE_PERMISSION
+}
 
-    @@map("user")
-  }
+enum PermissionAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LIST
+  UPLOAD
+  MANAGE
+}
 
-model user {
-  user_id       String    @id @db.VarChar
-  first_name    String    @db.VarChar
-  last_name     String    @db.VarChar
-  email         String    @db.VarChar
-  password_hash String    @db.VarChar
-  role          user_role
+//////////////////////
+// MODELS
+//////////////////////
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  deleted_at DateTime?
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  firstName    String   @db.VarChar(100)
+  lastName     String   @db.VarChar(100)
+  // Case-insensitive unique email using citext
+  email        String   @unique @db.Citext
+  passwordHash String   @db.VarChar(255)
+  role         UserRole @default(USER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   // relations
-  user_locations             user_location[]
-  refresh_tokens             refresh_token[]
-  products_created           product[]          @relation("product_createdBy")
-  products_updated           product[]          @relation("product_updatedBy")
-  product_images_created     product_images[]   @relation("product_images_createdBy")
-  product_images_updated     product_images[]   @relation("product_images_updatedBy")
-  categories_created         category[]         @relation("category_createdBy")
-  categories_updated         category[]         @relation("category_updatedBy")
-  product_categories_created product_category[] @relation("product_category_createdBy")
-  product_categories_updated product_category[] @relation("product_category_updatedBy")
-  orders_updated             order[]            @relation("order_updatedBy")
+  userLocations            UserLocation[]
+  refreshTokens            RefreshToken[]
+  productsCreated          Product[]         @relation("productCreatedBy")
+  productsUpdated          Product[]         @relation("productUpdatedBy")
+  productImagesCreated     ProductImage[]    @relation("productImagesCreatedBy")
+  productImagesUpdated     ProductImage[]    @relation("productImagesUpdatedBy")
+  categoriesCreated        Category[]        @relation("categoryCreatedBy")
+  categoriesUpdated        Category[]        @relation("categoryUpdatedBy")
+  productCategoriesCreated ProductCategory[] @relation("productCategoryCreatedBy")
+  productCategoriesUpdated ProductCategory[] @relation("productCategoryUpdatedBy")
+  ordersUpdated            Order[]           @relation("orderUpdatedBy")
+  brandsCreated            Brand[]           @relation("brandCreatedBy")
+  brandsUpdated            Brand[]           @relation("brandUpdatedBy")
+  cartSession              CartSession[]
+  orders                   Order[]
 
-  // brand relations (opposite sides for brand.createdBy / brand.updatedBy)
-  brands_created brand[] @relation("brand_createdBy")
-  brands_updated brand[] @relation("brand_updatedBy")
-
-  // cart & order relations
-  cart_sessions cart_session[]
-  orders        order[]
-
-  @@map("user")
+  @@index([createdAt])
+  @@index([deletedAt])
 }
 
 model UserLocation {
-  user_location_id String  @id @db.VarChar
-  user_id          String  @db.VarChar
-  phone            String  @db.VarChar
-  address          String  @db.VarChar
+  id      String @id @default(uuid()) @db.Uuid
+  userId  String @db.Uuid
+  phone   String @db.VarChar(32)
+  address String @db.VarChar(255)
 
   // relations
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([user_id])
-  @@map("user_location")
+  @@index([userId])
+  @@index([phone])
 }
 
 model RolePermission {
-  role_permission_id String   @id @db.VarChar
-  permission_feature String   @db.VarChar // source says "enum" — make enum later if desired
-  permission_action  String   @db.VarChar // source says "enum" — make enum later if desired
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-  deleted_at         DateTime?
+  rolePermissionId  String            @id @default(uuid()) @db.Uuid
+  role              UserRole          @default(USER)
+  permissionFeature PermissionFeature @default(USER)
+  permissionAction  PermissionAction  @default(READ)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
 
-  @@map("role_permission")
+  @@unique([role, permissionFeature, permissionAction])
 }
 
 model RefreshToken {
-  token      String   @id @db.VarChar
-  user_id    String   @db.VarChar
-  expired_at DateTime
-  created_at DateTime @default(now())
+  token     String   @id @db.VarChar(1000)
+  userId    String   @db.Uuid
+  expiredAt DateTime
+  createdAt DateTime @default(now())
 
   // relations
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([user_id])
-  @@map("refresh_token")
+  @@index([userId])
+  @@index([expiredAt])
 }
 
 model Brand {
-  brand_id    String   @id @db.VarChar
-  brand_name  String   @db.VarChar
-  description String?  @db.VarChar
-  created_at  DateTime @default(now())
-  created_by  String?  @db.VarChar
-  updated_at  DateTime @updatedAt
-  updated_by  String?  @db.VarChar
-  deleted_at  DateTime?
+  id          String    @id @default(uuid()) @db.Uuid
+  // Unique, case-insensitive brand names
+  brandName   String    @db.Citext
+  description String?   @db.VarChar(1000)
+  createdAt   DateTime  @default(now())
+  createdById String?   @db.Uuid
+  updatedById String?   @db.Uuid
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   // relations
   products Product[]
 
-  createdBy User? @relation("brand_createdBy", fields: [created_by], references: [user_id])
-  updatedBy User? @relation("brand_updatedBy", fields: [updated_by], references: [user_id])
+  createdBy User? @relation("brandCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("brandUpdatedBy", fields: [updatedById], references: [id])
 
-  @@map("brand")
+  @@unique([brandName])
+  @@index([createdById])
+  @@index([updatedById])
 }
 
 model Product {
-  product_id          String   @id @db.VarChar
-  product_name        String   @db.VarChar
-  product_type        String   @db.VarChar // source says "enum" — convert later if you have values
-  price               Decimal  @db.Decimal(12, 2)
-  quantity            Int
-  usage_instructions  String?  @db.VarChar
-  description         String?  @db.VarChar
-  ingredients         String?  @db.VarChar
-  brand_id            String?  @db.VarChar
-  created_at          DateTime @default(now())
-  created_by          String?  @db.VarChar
-  updated_at          DateTime @updatedAt
-  updated_by          String?  @db.VarChar
-  deleted_at          DateTime?
+  id                String    @id @default(uuid()) @db.Uuid
+  productName       String    @db.Citext
+  productType       String    @db.VarChar(64) // TODO: convert to enum when values are fixed
+  price             Decimal   @default(0) @db.Decimal(12, 2)
+  quantity          Int       @default(0)
+  usageInstructions String?   @db.VarChar(2000)
+  description       String?   @db.VarChar(4000)
+  ingredients       String?   @db.VarChar(2000)
+  brandId           String?   @db.Uuid
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
   // relations
-  brand  Brand? @relation(fields: [brand_id], references: [brand_id])
-  images ProductImages[]
+  brand      Brand?            @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  images     ProductImage[]
   categories ProductCategory[]
 
-  createdBy User? @relation("product_createdBy", fields: [created_by], references: [user_id])
-  updatedBy User? @relation("product_updatedBy", fields: [updated_by], references: [user_id])
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
 
-  @@index([brand_id])
-  @@index([created_by])
-  @@index([updated_by])
-  @@map("product")
+  createdBy User? @relation("productCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("productUpdatedBy", fields: [updatedById], references: [id])
+
+  // Avoid duplicate product names within a brand
+  @@unique([brandId, productName])
+  @@index([brandId])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([createdAt])
 }
 
-model ProductImages {
-  product_image_id String   @id @db.VarChar
-  product_id       String   @db.VarChar
-  image_path       String   @db.VarChar
-  created_at       DateTime @default(now())
-  created_by       String?  @db.VarChar
-  updated_at       DateTime @updatedAt
-  updated_by       String?  @db.VarChar
-  deleted_at       DateTime?
+model ProductImage {
+  id          String    @id @default(uuid()) @db.Uuid
+  productId   String    @db.Uuid
+  imagePath   String    @db.VarChar(1024)
+  createdAt   DateTime  @default(now())
+  createdById String?   @db.Uuid
+  updatedAt   DateTime  @updatedAt
+  updatedById String?   @db.Uuid
+  deletedAt   DateTime?
 
   // relations
-  product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  createdBy User? @relation("product_images_createdBy", fields: [created_by], references: [user_id])
-  updatedBy User? @relation("product_images_updatedBy", fields: [updated_by], references: [user_id])
+  createdBy User? @relation("productImagesCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("productImagesUpdatedBy", fields: [updatedById], references: [id])
 
-  @@index([product_id])
-  @@index([created_by])
-  @@index([updated_by])
-  @@map("product_images")
+  // Prevent duplicate file paths
+  @@unique([imagePath])
+  @@index([productId])
+  @@index([createdById])
+  @@index([updatedById])
 }
 
 model Category {
-  category_id   String   @id @db.VarChar
-  category_name String   @db.VarChar
-  created_at    DateTime @default(now())
-  created_by    String?  @db.VarChar
-  updated_at    DateTime @updatedAt
-  updated_by    String?  @db.VarChar
-  deleted_at    DateTime?
+  id           String    @id @default(uuid()) @db.Uuid
+  // Unique, case-insensitive category names
+  categoryName String    @db.Citext
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   // relations
-  product_categories ProductCategory[]
+  productCategories ProductCategory[]
 
-  createdBy User? @relation("category_createdBy", fields: [created_by], references: [user_id])
-  updatedBy User? @relation("category_updatedBy", fields: [updated_by], references: [user_id])
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
 
-  @@map("category")
+  createdBy User? @relation("categoryCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("categoryUpdatedBy", fields: [updatedById], references: [id])
+
+  @@unique([categoryName])
+  @@index([createdById])
+  @@index([updatedById])
 }
 
 model ProductCategory {
-  product_category_id String   @id @db.VarChar
-  product_id          String   @db.VarChar
-  category_id         String   @db.VarChar
-  created_at          DateTime @default(now())
-  created_by          String?  @db.VarChar
-  updated_at          DateTime @updatedAt
-  updated_by          String?  @db.VarChar
-  deleted_at          DateTime?
+  id          String    @id @default(uuid()) @db.Uuid
+  productId   String    @db.Uuid
+  categoryId  String    @db.Uuid
+  createdAt   DateTime  @default(now())
+  createdById String?   @db.Uuid
+  updatedAt   DateTime  @updatedAt
+  updatedById String?   @db.Uuid
+  deletedAt   DateTime?
 
   // relations
-  product  Product  @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-  category Category @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  createdBy User? @relation("product_category_createdBy", fields: [created_by], references: [user_id])
-  updatedBy User? @relation("product_category_updatedBy", fields: [updated_by], references: [user_id])
+  createdBy User? @relation("productCategoryCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("productCategoryUpdatedBy", fields: [updatedById], references: [id])
 
-  @@unique([product_id, category_id])
-  @@index([product_id])
-  @@index([category_id])
-  @@map("product_category")
+  @@unique([productId, categoryId])
+  @@index([productId])
+  @@index([categoryId])
+  @@index([createdById])
+  @@index([updatedById])
+}
+
+model CartSession {
+  id             String  @id @default(uuid()) @db.Uuid
+  userId         String  @db.Uuid
+  baseTotalPrice Decimal @default(0) @db.Decimal(12, 2)
+  totalTax       Decimal @default(0) @db.Decimal(12, 2)
+
+  // relations
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  // Enforce one active cart per user
+  @@unique([userId])
+  @@index([userId])
+}
+
+model CartItem {
+  id            String        @id @default(uuid()) @db.Uuid
+  cartSessionId String        @db.Uuid
+  referenceId   String        @db.VarChar(255) // polymorphic, no relation
+  referenceType ReferenceType
+  quantity      Int           @default(1)
+  note          String?       @db.VarChar(1000)
+
+  // relations
+  cartSession CartSession @relation(fields: [cartSessionId], references: [id], onDelete: Cascade)
+
+  @@index([cartSessionId])
 }
 
 model Order {
-  order_id         String         @id @db.VarChar
-  user_id          String         @db.VarChar
-  order_status     OrderStatus
-  payment_method   PaymentMethod
-  payment_status   PaymentStatus
-  paid_at          DateTime?
-  evidence_path    String?        @db.VarChar
-  total_tax        Decimal        @default(0) @db.Decimal(12, 2)
-  base_total_price Decimal        @db.Decimal(12, 2)
-  total_amount_due Decimal        @db.Decimal(12, 2)
-  note             String?        @db.VarChar
-  user_phone       String?        @db.VarChar
-  user_address     String?        @db.VarChar
-  updated_by       String?        @db.VarChar
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @updatedAt
-  deleted_at       DateTime?
+  id             String        @id @default(uuid()) @db.Uuid
+  userId         String        @db.Uuid
+  orderStatus    OrderStatus   @default(CREATED)
+  paymentMethod  PaymentMethod @default(COD)
+  paymentStatus  PaymentStatus @default(UNPAID)
+  paidAt         DateTime?
+  evidencePath   String?       @db.VarChar(1024)
+  totalTax       Decimal       @default(0) @db.Decimal(12, 2)
+  baseTotalPrice Decimal       @default(0) @db.Decimal(12, 2)
+  totalAmountDue Decimal       @default(0) @db.Decimal(12, 2)
+  note           String?       @db.VarChar(2000)
+  userPhone      String?       @db.VarChar(32)
+  userAddress    String?       @db.VarChar(255)
+  updatedById    String?       @db.Uuid
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
 
   // relations
-  user  User  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  items OrderItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     OrderItem[]
+  updatedBy User?       @relation("orderUpdatedBy", fields: [updatedById], references: [id])
 
-  updatedBy User? @relation("order_updatedBy", fields: [updated_by], references: [user_id])
-
-  @@index([user_id])
-  @@index([updated_by])
-  @@map("order")
-}
-model order {
-  order_id         String         @id @db.VarChar
-  user_id          String         @db.VarChar
-  order_status     order_status
-  payment_method   payment_method
-  payment_status   payment_status
-  paid_at          DateTime?
-  evidence_path    String?        @db.VarChar
-  total_tax        Decimal        @default(0) @db.Decimal(12, 2)
-  base_total_price Decimal        @db.Decimal(12, 2)
-  total_amount_due Decimal        @db.Decimal(12, 2)
-  note             String?        @db.VarChar
-  user_phone       String?        @db.VarChar
-  user_address     String?        @db.VarChar
-  updated_by       String?        @db.VarChar
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @updatedAt
-  deleted_at       DateTime?
-
-  // relations
-  user  user         @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  items order_item[]
-
-  updatedBy user? @relation("order_updatedBy", fields: [updated_by], references: [user_id])
-
-  @@index([user_id])
-  @@index([updated_by])
-  @@map("order")
+  @@index([userId])
+  @@index([updatedById])
+  @@index([createdAt])
 }
 
 model OrderItem {
-  order_item_id   String         @id @db.VarChar
-  order_id        String         @db.VarChar
-  order_item_name String         @db.VarChar
-  reference_id    String         @db.VarChar // polymorphic, no relation
-  reference_type  ReferenceType
-  quantity        Int
-  price           Decimal        @db.Decimal(12, 2)
-  note            String?        @db.VarChar
+  id            String        @id @default(uuid()) @db.Uuid
+  orderId       String        @db.Uuid
+  orderItemName String        @db.VarChar(255)
+  referenceId   String        @db.VarChar(255) // polymorphic, no relation
+  referenceType ReferenceType
+  quantity      Int           @default(1)
+  price         Decimal       @default(0) @db.Decimal(12, 2)
+  note          String?       @db.VarChar(1000)
 
   // relations
-  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@index([order_id])
-  @@map("order_item")
+  // Avoid duplicate lines for the same referenced object
+  @@unique([orderId, referenceId, referenceType])
+  @@index([orderId])
 }

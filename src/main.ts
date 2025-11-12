@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common/filters';
+import { TransformInterceptor } from './common/interceptors';
 import type { Env } from './config/env';
 
 async function bootstrap() {
@@ -29,9 +31,25 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      transformOptions: { enableImplicitConversion: true },
+      transformOptions: {
+        enableImplicitConversion: false,
+      },
+      exceptionFactory: (validationErrors) => {
+        return new UnprocessableEntityException(
+          validationErrors.map((error) => ({
+            field: error.property,
+            error: Object.values(
+              error.constraints as Record<string, string>,
+            ).join(', '),
+          })),
+        );
+      },
     }),
   );
+
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   app.use(helmet());
   app.enableCors({ origin: true, credentials: true });
