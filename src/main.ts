@@ -1,11 +1,13 @@
-import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { ValidationError } from 'class-validator';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
+import { ValidationException } from './common/exceptions';
 import { AllExceptionsFilter } from './common/filters';
 import { TransformInterceptor } from './common/interceptors';
 import type { Env } from './config/env';
@@ -29,25 +31,21 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: false,
-      },
-      exceptionFactory: (validationErrors) => {
-        return new UnprocessableEntityException(
-          validationErrors.map((error) => ({
-            field: error.property,
-            error: Object.values(
-              error.constraints as Record<string, string>,
-            ).join(', '),
-          })),
-        );
+      forbidUnknownValues: false,
+      exceptionFactory: (errors: ValidationError[]) => {
+        const details = errors.flatMap((e) => {
+          const constraints = e.constraints ? Object.values(e.constraints) : [];
+          return constraints.length
+            ? constraints.map((msg) => ({ field: e.property, message: msg }))
+            : [{ field: e.property, message: 'Invalid value' }];
+        });
+        return new ValidationException('Validation failed', details);
       },
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(app.get(Logger)));
 
   app.useGlobalInterceptors(new TransformInterceptor());
 

@@ -11,7 +11,12 @@ import {
   TokenInvalidException,
   TokenRevokedException,
 } from '@/common/exceptions';
-import { HashingService, PrismaService, TokenService } from '@/common/services';
+import {
+  HashingService,
+  LoggerService,
+  PrismaService,
+  TokenService,
+} from '@/common/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
 import { LoginBodyDTO, LoginResponseDTO, RegisterBodyDTO } from './auth.dto';
@@ -22,6 +27,7 @@ export class AuthService {
     private readonly hashingService: HashingService,
     private readonly prismaService: PrismaService,
     private readonly tokenService: TokenService,
+    private readonly logger: LoggerService,
   ) {}
 
   async register(body: RegisterBodyDTO): Promise<User> {
@@ -37,11 +43,18 @@ export class AuthService {
           passwordHash: hashedPassword,
         },
       });
+      this.logger.log('User registered successfully', 'AuthService');
       return user;
     } catch (error) {
       if (isUniqueConstraintPrismaError(error)) {
+        this.logger.error('Email already exists', error.message, 'AuthService');
         throw new EmailAlreadyExistsException(body.email);
       }
+      this.logger.error(
+        'Error during registration',
+        error instanceof Error ? error.message : String(error),
+        'AuthService',
+      );
       throw error;
     }
   }
@@ -51,6 +64,7 @@ export class AuthService {
       where: { email: body.email },
     });
     if (!user) {
+      this.logger.warn('Invalid credentials provided', 'AuthService');
       throw new InvalidCredentialsException();
     }
     const isValidPassword = await this.hashingService.compare(
@@ -58,6 +72,7 @@ export class AuthService {
       user.passwordHash,
     );
     if (!isValidPassword) {
+      this.logger.warn('Invalid credentials provided', 'AuthService');
       throw new InvalidCredentialsException();
     }
     const tokens = await this.generateTokens({
@@ -69,6 +84,7 @@ export class AuthService {
         role: user.role,
       },
     });
+    this.logger.log('User logged in successfully', 'AuthService');
     return tokens;
   }
 
@@ -92,6 +108,7 @@ export class AuthService {
       },
     });
 
+    this.logger.debug('Tokens generated successfully', 'AuthService');
     return { accessToken, refreshToken };
   }
 
@@ -105,6 +122,7 @@ export class AuthService {
         await this.tokenService.verifyRefreshToken<TokenPayload>(refreshToken);
 
       if (dayjs().isAfter(dayjs.unix(decodedToken.exp))) {
+        this.logger.warn('Refresh token expired', 'AuthService');
         throw new TokenExpiredException('refresh');
       }
 
@@ -116,11 +134,18 @@ export class AuthService {
         where: { token: refreshToken },
       });
 
+      this.logger.log('Tokens refreshed successfully', 'AuthService');
       return tokens;
     } catch (error) {
       if (isNotFoundPrismaError(error)) {
+        this.logger.warn('Refresh token revoked', 'AuthService');
         throw new TokenRevokedException();
       }
+      this.logger.error(
+        'Error during token refresh',
+        error instanceof Error ? error.message : String(error),
+        'AuthService',
+      );
       throw new TokenInvalidException('Fail to refresh tokens');
     }
   }
@@ -131,12 +156,14 @@ export class AuthService {
         where: { token: refreshToken },
       });
       if (!stored) {
+        this.logger.warn('Refresh token expired during logout', 'AuthService');
         throw new TokenExpiredException('refresh');
       }
 
       try {
         await this.tokenService.verifyRefreshToken(refreshToken);
       } catch (err) {
+        this.logger.warn('Invalid refresh token during logout', 'AuthService');
         throw new TokenInvalidException('Refresh token is invalid or expired');
       }
 
@@ -146,14 +173,21 @@ export class AuthService {
         },
       });
 
+      this.logger.log('User logged out successfully', 'AuthService');
       return { message: 'Logout successfully' };
     } catch (error) {
       if (isNotFoundPrismaError(error)) {
+        this.logger.warn('Refresh token revoked during logout', 'AuthService');
         throw new TokenRevokedException();
       }
       if (error instanceof AuthException) {
         throw error;
       }
+      this.logger.error(
+        'Unknown error during logout',
+        error instanceof Error ? error.message : 'Unknown error',
+        'AuthService',
+      );
       throw new AuthException(
         'Logout failed due to an unknown error',
         ErrorCode.LOGOUT_FAILED,

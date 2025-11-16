@@ -4,6 +4,8 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
+import { createLoggerOptions } from '@/utils';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule, TokenService } from './common';
@@ -17,38 +19,21 @@ import { UserModule } from './routes/user';
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Env, true>) => {
-        const nodeEnv = config.get('NODE_ENV', { infer: true });
-        const level = config.get('LOG_LEVEL', { infer: true });
-        return {
-          pinoHttp: {
-            level,
-            transport:
-              nodeEnv === 'development'
-                ? {
-                    target: 'pino-pretty',
-                    options: {
-                      singleLine: true,
-                      colorize: true,
-                      translateTime: 'SYS:standard',
-                      ignore: 'pid,hostname',
-                    },
-                  }
-                : undefined,
-
-            genReqId: (req) =>
-              (req.headers['x-request-id'] as string) || crypto.randomUUID(),
-            redact: {
-              paths: [
-                'req.headers.authorization',
-                'req.body.password',
-                'res.body.token',
-              ],
-              remove: true,
-            },
+      useFactory: (configService: ConfigService<Env, true>) => ({
+        pinoHttp: {
+          ...createLoggerOptions(configService),
+          genReqId: (req) =>
+            (req.headers['x-request-id'] as string) || crypto.randomUUID(),
+          redact: {
+            paths: [
+              'req.headers.authorization',
+              'req.body.password',
+              'res.body.token',
+            ],
+            remove: true,
           },
-        };
-      },
+        },
+      }),
     }),
     HealthModule,
     ThrottlerModule.forRootAsync({

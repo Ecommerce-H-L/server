@@ -1,8 +1,14 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import pino from 'pino';
 
+import { LoggerService } from '@/common/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
 export interface PrismaError extends Error {
@@ -12,12 +18,22 @@ export interface PrismaError extends Error {
 
 @Catch(Prisma.PrismaClientKnownRequestError, Prisma.PrismaClientValidationError)
 export class PrismaExceptionFilter implements ExceptionFilter {
+  constructor(private readonly logger: LoggerService) {}
+
   catch(e: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
 
+    const status = HttpStatus.BAD_REQUEST;
+    const message = (e as Error)?.message || 'Database error';
+
     pino().error({ err: e, path: req.path }, 'Prisma exception');
+    this.logger.error(
+      `Prisma exception thrown: ${message}`,
+      (e as Error).stack,
+      'PrismaExceptionsFilter',
+    );
 
     if (isUniqueConstraintPrismaError(e)) {
       const targets = e.meta?.target;
@@ -38,9 +54,11 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         .status(400)
         .json({ statusCode: 400, message: 'Invalid data sent to database' });
     }
-    return res.status(500).json({
-      statusCode: 500,
-      message: (e as Error)?.message || 'Database error',
+    return res.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: req.url,
+      message,
     });
   }
 }
