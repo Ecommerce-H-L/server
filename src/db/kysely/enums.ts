@@ -56,3 +56,9 @@ export const PermissionAction = {
 } as const;
 export type PermissionAction =
   (typeof PermissionAction)[keyof typeof PermissionAction];
+export const VerificationCodeType = {
+  REGISTER: 'REGISTER',
+  RESET_PASSWORD: 'RESET_PASSWORD',
+} as const;
+export type VerificationCodeType =
+  (typeof VerificationCodeType)[keyof typeof VerificationCodeType];

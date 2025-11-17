@@ -45,7 +45,7 @@ export class UserService {
       }
       this.logger.error(
         'Error during user creation',
-        e instanceof Error ? (e as any).message : String(e),
+        e instanceof Error ? e.message : String(e),
         'UserService',
       );
       throw e;
@@ -115,7 +115,7 @@ export class UserService {
       }
       this.logger.error(
         'Error during user update',
-        e instanceof Error ? (e as any).message : String(e),
+        e instanceof Error ? e.message : String(e),
         'UserService',
       );
       throw e;

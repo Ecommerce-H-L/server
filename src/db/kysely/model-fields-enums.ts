@@ -336,6 +336,28 @@ export const UserLocation_FieldWithTableEnum = {
 export type UserLocation_FieldWithTableEnum =
   (typeof UserLocation_FieldWithTableEnum)[keyof typeof UserLocation_FieldWithTableEnum];
 
+export const VerificationCode_FieldEnum = {
+  id: 'id',
+  email: 'email',
+  code: 'code',
+  type: 'type',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+} as const;
+export type VerificationCode_FieldEnum =
+  (typeof VerificationCode_FieldEnum)[keyof typeof VerificationCode_FieldEnum];
+
+export const VerificationCode_FieldWithTableEnum = {
+  id: 'null.id',
+  email: 'null.email',
+  code: 'null.code',
+  type: 'null.type',
+  expiresAt: 'null.expiresAt',
+  createdAt: 'null.createdAt',
+} as const;
+export type VerificationCode_FieldWithTableEnum =
+  (typeof VerificationCode_FieldWithTableEnum)[keyof typeof VerificationCode_FieldWithTableEnum];
+
 export const DB_TableEnum = {
   Brand: 'Brand',
   CartItem: 'CartItem',
@@ -350,5 +372,6 @@ export const DB_TableEnum = {
   RolePermission: 'RolePermission',
   User: 'User',
   UserLocation: 'UserLocation',
+  VerificationCode: 'VerificationCode',
 } as const;
 export type DB_TableEnum = (typeof DB_TableEnum)[keyof typeof DB_TableEnum];

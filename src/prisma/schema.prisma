@@ -80,6 +80,11 @@ enum PermissionAction {
   MANAGE
 }
 
+enum VerificationCodeType {
+  REGISTER
+  RESET_PASSWORD
+}
+
 //////////////////////
 // MODELS
 //////////////////////
@@ -154,6 +159,19 @@ model RefreshToken {
 
   @@index([userId])
   @@index([expiredAt])
+}
+
+model VerificationCode {
+  id    Int                  @id @default(autoincrement())
+  email String               @db.VarChar(500)
+  code  String               @db.VarChar(50)
+  type  VerificationCodeType
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, type])
+  @@index([expiresAt])
 }
 
 model Brand {

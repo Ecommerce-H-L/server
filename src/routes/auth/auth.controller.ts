@@ -56,4 +56,11 @@ export class AuthController {
     const res = await this.authService.logout(body.refreshToken);
     return new LogoutResponseDTO(res);
   }
+
+  //TODO: update types
+  @Post('send-otp')
+  @HttpCode(HttpStatus.OK)
+  async sendOTP(@Body() body: any): Promise<{ message: string }> {
+    return this.authService.sendOtp(body);
+  }
 }

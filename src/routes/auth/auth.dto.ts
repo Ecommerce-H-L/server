@@ -8,9 +8,12 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
 
 import { Match } from '@/common/decorators';
 import type { UserRole } from '@/db/kysely/enums';
+
+import { SendOTPBodySchema } from './auth.model';
 
 export class RegisterBodyDTO {
   @ApiProperty({ maxLength: 254 })
@@ -143,3 +146,5 @@ export class LogoutResponseDTO {
     Object.assign(this, partial);
   }
 }
+
+export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}

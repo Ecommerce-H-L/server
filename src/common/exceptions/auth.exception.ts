@@ -107,3 +107,13 @@ export class TooManyAttemptsException extends AuthException {
     );
   }
 }
+
+export class FailedToSendOTPException extends AuthException {
+  constructor() {
+    super(
+      'Failed to send the OTP. Please try again later.',
+      ErrorCode.FAILED_TO_SEND_OTP,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}

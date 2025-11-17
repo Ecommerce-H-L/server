@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    "jsx": "react",
     "resolvePackageJsonExports": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
@@ -15,7 +16,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "paths": { "@/*": ["src/*"] },
+    "paths": { "@/*": ["src/*"], "@common/*": ["common/*"] },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

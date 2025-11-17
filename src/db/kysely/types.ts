@@ -13,6 +13,7 @@ import type {
   PermissionFeature,
   ReferenceType,
   UserRole,
+  VerificationCodeType,
 } from './enums';
 
 export type Brand = {
@@ -145,6 +146,14 @@ export type UserLocation = {
   phone: string;
   address: string;
 };
+export type VerificationCode = {
+  id: Generated<number>;
+  email: string;
+  code: string;
+  type: VerificationCodeType;
+  expiresAt: Timestamp;
+  createdAt: Generated<Timestamp>;
+};
 export type DB = {
   Brand: Brand;
   CartItem: CartItem;
@@ -159,4 +168,5 @@ export type DB = {
   RolePermission: RolePermission;
   User: User;
   UserLocation: UserLocation;
+  VerificationCode: VerificationCode;
 };

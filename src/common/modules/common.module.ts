@@ -3,7 +3,12 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { AccessTokenGuard, ApiKeyGuard, AuthenticationGuard } from '../guards';
-import { HashingService, PrismaService, TokenService } from '../services';
+import {
+  EmailService,
+  HashingService,
+  PrismaService,
+  TokenService,
+} from '../services';
 import { LoggerService } from '../services/logger.service';
 
 const services = [
@@ -14,6 +19,7 @@ const services = [
   AccessTokenGuard,
   ApiKeyGuard,
   LoggerService,
+  EmailService,
 ];
 
 @Global()
