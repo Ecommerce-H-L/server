@@ -13,14 +13,6 @@ import { PrismaService } from '@/shared';
 export class AuthRepo {
   constructor(private readonly prismaService: PrismaService) {}
 
-  createUser(
-    user: Prisma.UserCreateInput,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    return this.prismaService.user.create({
-      data: user,
-    });
-  }
-
   createVerificationCode(
     payload: Prisma.VerificationCodeCreateInput,
   ): Promise<VerificationCode> {
@@ -36,6 +28,21 @@ export class AuthRepo {
         code: payload.code,
         expiresAt: payload.expiresAt,
       },
+    });
+  }
+
+  findUniqueVerificationCode(
+    uniqueValue:
+      | { id: number }
+      | {
+          email_type: {
+            email: string;
+            type: VerificationCodeType;
+          };
+        },
+  ) {
+    return this.prismaService.verificationCode.findUnique({
+      where: uniqueValue,
     });
   }
 
@@ -55,7 +62,12 @@ export class AuthRepo {
   }
 
   findUserByEmail(email: User['email']): Promise<User | null> {
-    return this.prismaService.user.findUnique({ where: { email } });
+    return this.prismaService.user.findFirst({
+      where: {
+        email,
+        deletedAt: null,
+      },
+    });
   }
 
   createRefreshToken(data: Prisma.RefreshTokenUncheckedCreateInput) {

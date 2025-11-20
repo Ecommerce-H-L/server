@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { AccessTokenGuard, ApiKeyGuard, AuthenticationGuard } from '../guards';
+import { SharedUserRepository } from '../repositories';
 import {
   EmailService,
   HashingService,
@@ -20,6 +21,7 @@ const services = [
   ApiKeyGuard,
   LoggerService,
   EmailService,
+  SharedUserRepository,
 ];
 
 @Global()
@@ -34,4 +36,4 @@ const services = [
   exports: services,
   imports: [JwtModule],
 })
-export class CommonModule {}
+export class SharedModule {}

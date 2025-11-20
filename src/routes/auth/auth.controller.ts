@@ -63,4 +63,11 @@ export class AuthController {
   async sendOTP(@Body() body: any): Promise<{ message: string }> {
     return this.authService.sendOtp(body);
   }
+
+  //TODO: update types
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() body: any): Promise<{ message: string }> {
+    return this.authService.resetPassword(body);
+  }
 }

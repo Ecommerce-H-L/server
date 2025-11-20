@@ -12,7 +12,7 @@ import { Env, validateEnv } from './config/env';
 import { AuthModule } from './routes/auth';
 import { HealthController, HealthModule } from './routes/health';
 import { UserModule } from './routes/user';
-import { CommonModule, TokenService } from './shared';
+import { SharedModule, TokenService } from './shared';
 
 @Module({
   imports: [
@@ -46,7 +46,7 @@ import { CommonModule, TokenService } from './shared';
         },
       ],
     }),
-    CommonModule,
+    SharedModule,
     AuthModule,
     UserModule,
   ],

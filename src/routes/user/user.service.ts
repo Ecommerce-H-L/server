@@ -1,41 +1,38 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 
+import { SharedUserRepository } from '@/shared';
 import {
   EmailAlreadyExistsException,
   UserNotFoundException,
 } from '@/shared/exceptions';
-import {
-  HashingService,
-  LoggerService,
-  PrismaService,
-} from '@/shared/services';
+import { HashingService, LoggerService } from '@/shared/services';
 import { isUniqueConstraintPrismaError } from '@/utils';
 
 import { CreateUserDto, UpdateUserDto, UserEntity } from './';
 import { BASE_SELECT, toEntity } from './user.helper';
+import { UserRepo } from './user.repo';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly hashingService: HashingService,
     private readonly logger: LoggerService,
+    private readonly userRepo: UserRepo,
+    private readonly sharedUserRepo: SharedUserRepository,
   ) {}
 
   async create(dto: CreateUserDto): Promise<UserEntity> {
     const passwordHash = await this.hashingService.hash(dto.password);
     try {
-      const created = await this.prisma.user.create({
-        data: {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          email: dto.email,
-          passwordHash,
-          role: dto.role ?? UserRole.USER,
-        },
-        select: BASE_SELECT,
+      const created = await this.sharedUserRepo.create({
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        email: dto.email,
+        passwordHash,
+        role: dto.role ?? UserRole.USER,
       });
+
       this.logger.log('User created successfully', 'UserService');
       return toEntity(created);
     } catch (e) {
@@ -53,7 +50,7 @@ export class UserService {
   }
 
   async findAll(): Promise<UserEntity[]> {
-    const users = await this.prisma.user.findMany({
+    const users = await this.userRepo.findMany({
       where: { deletedAt: null },
       select: BASE_SELECT,
       orderBy: { createdAt: 'desc' },
@@ -63,7 +60,7 @@ export class UserService {
   }
 
   async findOne(id: string): Promise<UserEntity> {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: BASE_SELECT,
     });
@@ -76,7 +73,7 @@ export class UserService {
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<UserEntity> {
-    const existing = await this.prisma.user.findFirst({
+    const existing = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: { id: true },
     });
@@ -91,17 +88,19 @@ export class UserService {
     }
 
     try {
-      const updated = await this.prisma.user.update({
-        where: { id },
-        data: {
+      const updated = await this.sharedUserRepo.update(
+        {
           firstName: dto.firstName,
           lastName: dto.lastName,
           email: dto.email,
           ...(passwordHash ? { passwordHash } : {}),
           ...(dto.role ? { role: dto.role } : {}),
         },
-        select: BASE_SELECT,
-      });
+        {
+          where: { id },
+          select: BASE_SELECT,
+        },
+      );
       this.logger.log(`User updated successfully: ${id}`, 'UserService');
       return toEntity(updated);
     } catch (e) {
@@ -123,7 +122,7 @@ export class UserService {
   }
 
   async remove(id: string): Promise<UserEntity> {
-    const existing = await this.prisma.user.findFirst({
+    const existing = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: BASE_SELECT,
     });
@@ -132,11 +131,10 @@ export class UserService {
       throw new UserNotFoundException(id);
     }
 
-    const removed = await this.prisma.user.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-      select: BASE_SELECT,
-    });
+    const removed = await this.sharedUserRepo.update(
+      { deletedAt: new Date() },
+      { where: { id }, select: BASE_SELECT },
+    );
     this.logger.log(`User deleted successfully: ${id}`, 'UserService');
     return toEntity(removed);
   }

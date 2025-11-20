@@ -54,6 +54,10 @@ export class RegisterBodyDTO {
     message: 'Confirm password does not match with password',
   })
   confirmedPassword!: string;
+
+  @ApiProperty()
+  @IsString()
+  code!: string;
 }
 
 export class RegisterUserData {
@@ -148,3 +152,24 @@ export class LogoutResponseDTO {
 }
 
 export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}
+
+export class ResetPasswordBody {
+  @ApiProperty()
+  @IsEmail({}, { message: 'Invalid email address' })
+  @IsNotEmpty({ message: 'Email is required' })
+  email!: string;
+
+  @ApiProperty()
+  @IsString({ message: 'Invalid verification code' })
+  @IsNotEmpty({ message: 'Verification code is required' })
+  code!: string;
+  @ApiProperty()
+  @IsString({ message: 'New password must be a string' })
+  @IsNotEmpty({ message: 'New password is required' })
+  newPassword!: string;
+
+  @ApiProperty()
+  @IsString({ message: 'Confirm new password must be a string' })
+  @IsNotEmpty({ message: 'Confirmation of new password is required' })
+  confirmedNewPassword!: string;
+}

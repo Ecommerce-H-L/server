@@ -99,7 +99,7 @@ export class InsufficientPermissionsException extends AuthException {
 }
 
 export class TooManyAttemptsException extends AuthException {
-  constructor(retryAfter: number) {
+  constructor() {
     super(
       'Too many attempts. Please try again later.',
       ErrorCode.TOO_MANY_ATTEMPTS,
@@ -113,6 +113,26 @@ export class FailedToSendOTPException extends AuthException {
     super(
       'Failed to send the OTP. Please try again later.',
       ErrorCode.FAILED_TO_SEND_OTP,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+export class InvalidOTPException extends AuthException {
+  constructor() {
+    super(
+      'The provided OTP is invalid.',
+      ErrorCode.INVALID_OTP,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+export class OTPExpiredException extends AuthException {
+  constructor() {
+    super(
+      'The OTP has expired.',
+      ErrorCode.OTP_EXPIRED,
       HttpStatus.BAD_REQUEST,
     );
   }

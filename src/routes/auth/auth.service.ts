@@ -5,12 +5,14 @@ import dayjs from 'dayjs';
 import { CreateEmailResponse } from 'resend';
 
 import { Env } from '@/config/env';
-import { ErrorCode, TokenPayload } from '@/shared';
+import { ErrorCode, SharedUserRepository, TokenPayload } from '@/shared';
 import {
   AuthException,
   EmailAlreadyExistsException,
   FailedToSendOTPException,
   InvalidCredentialsException,
+  InvalidOTPException,
+  OTPExpiredException,
   ResourceNotFoundException,
   TokenExpiredException,
   TokenInvalidException,
@@ -24,7 +26,12 @@ import {
 } from '@/shared/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
-import { LoginBodyDTO, LoginResponseDTO, RegisterBodyDTO } from './auth.dto';
+import {
+  LoginBodyDTO,
+  LoginResponseDTO,
+  RegisterBodyDTO,
+  ResetPasswordBody,
+} from './auth.dto';
 import { generateOTP } from './auth.helper';
 import { SendOTPBodyType } from './auth.model';
 import { AuthRepo } from './auth.repo';
@@ -38,14 +45,20 @@ export class AuthService {
     private readonly configService: ConfigService<Env, true>,
     private readonly emailService: EmailService,
     private readonly authRepo: AuthRepo,
+    private readonly sharedUserRepo: SharedUserRepository,
   ) {}
 
   async register(body: RegisterBodyDTO): Promise<Omit<User, 'passwordHash'>> {
     try {
+      await this.validateVerificationCode({
+        email: body.email,
+        type: VerificationCodeType.REGISTER,
+        code: body.code,
+      });
       const { password } = body;
       const hashedPassword = await this.hashingService.hash(password);
       const [user] = await Promise.all([
-        this.authRepo.createUser({
+        this.sharedUserRepo.create({
           email: body.email,
           firstName: body.firstName,
           lastName: body.lastName,
@@ -199,6 +212,39 @@ export class AuthService {
     }
   }
 
+  async resetPassword(body: ResetPasswordBody) {
+    const { email, code, newPassword } = body;
+    const user = await this.sharedUserRepo.findUnique({
+      email,
+    });
+    if (!user) {
+      throw new ResourceNotFoundException('Email', email);
+    }
+    await this.validateVerificationCode({
+      email,
+      type: VerificationCodeType.RESET_PASSWORD,
+      code,
+    });
+    const hashedPassword = await this.hashingService.hash(newPassword);
+    await Promise.all([
+      this.sharedUserRepo.update(
+        {
+          passwordHash: hashedPassword,
+        },
+        {
+          where: { id: user.id },
+        },
+      ),
+      this.authRepo.deleteVerificationCode({
+        email_type: {
+          email: body.email,
+          type: VerificationCodeType.RESET_PASSWORD,
+        },
+      }),
+    ]);
+    return { message: 'Update password successfully' };
+  }
+
   async sendOtp(body: SendOTPBodyType) {
     const user = await this.authRepo.findUserByEmail(body.email);
 
@@ -261,5 +307,29 @@ export class AuthService {
       throw new FailedToSendOTPException();
     }
     return { message: 'OTP sent successfully' };
+  }
+
+  async validateVerificationCode({
+    email,
+    type,
+    code,
+  }: {
+    email: string;
+    type: VerificationCodeType;
+    code: string;
+  }) {
+    const vevificationCode = await this.authRepo.findUniqueVerificationCode({
+      email_type: {
+        email,
+        type,
+      },
+    });
+    if (!vevificationCode || vevificationCode.code !== code) {
+      throw new InvalidOTPException();
+    }
+    if (new Date(vevificationCode.expiresAt) < new Date()) {
+      throw new OTPExpiredException();
+    }
+    return vevificationCode;
   }
 }

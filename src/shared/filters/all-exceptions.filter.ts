@@ -83,6 +83,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     const message = (exception as Error)?.message ?? 'Internal server error';
+
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       errorCode: 'INTERNAL_SERVER_ERROR',
