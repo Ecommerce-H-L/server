@@ -4,12 +4,12 @@ import { UserRole } from '@prisma/client';
 import {
   EmailAlreadyExistsException,
   UserNotFoundException,
-} from '@/common/exceptions';
+} from '@/shared/exceptions';
 import {
   HashingService,
   LoggerService,
   PrismaService,
-} from '@/common/services';
+} from '@/shared/services';
 import { isUniqueConstraintPrismaError } from '@/utils';
 
 import { CreateUserDto, UpdateUserDto, UserEntity } from './';

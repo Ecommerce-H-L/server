@@ -10,8 +10,8 @@ import {
 } from 'class-validator';
 import { createZodDto } from 'nestjs-zod';
 
-import { Match } from '@/common/decorators';
-import type { UserRole } from '@/db/kysely/enums';
+import { UserRole } from '@/db/kysely/enums';
+import { Match } from '@/shared/decorators';
 
 import { SendOTPBodySchema } from './auth.model';
 

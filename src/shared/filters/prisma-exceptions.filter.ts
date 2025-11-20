@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import pino from 'pino';
 
-import { LoggerService } from '@/common/services';
+import { LoggerService } from '@/shared/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
 export interface PrismaError extends Error {

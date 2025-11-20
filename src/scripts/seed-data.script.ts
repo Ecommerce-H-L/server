@@ -6,8 +6,8 @@ import {
 } from '@prisma/client';
 import pino from 'pino';
 
-import { HashingService } from '@/common';
 import envConfig from '@/config/env';
+import { HashingService } from '@/shared';
 
 const prisma = new PrismaClient();
 const hashing = new HashingService();

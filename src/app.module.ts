@@ -8,11 +8,11 @@ import { createLoggerOptions } from '@/utils';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommonModule, TokenService } from './common';
 import { Env, validateEnv } from './config/env';
 import { AuthModule } from './routes/auth';
 import { HealthController, HealthModule } from './routes/health';
 import { UserModule } from './routes/user';
+import { CommonModule, TokenService } from './shared';
 
 @Module({
   imports: [

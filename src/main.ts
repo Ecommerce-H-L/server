@@ -7,10 +7,10 @@ import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
-import { ValidationException } from './common/exceptions';
-import { AllExceptionsFilter } from './common/filters';
-import { TransformInterceptor } from './common/interceptors';
 import type { Env } from './config/env';
+import { ValidationException } from './shared/exceptions';
+import { AllExceptionsFilter } from './shared/filters';
+import { TransformInterceptor } from './shared/interceptors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });

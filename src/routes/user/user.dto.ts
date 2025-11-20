@@ -9,7 +9,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { Match } from '@/common';
+import { Match } from '@/shared';
 
 export class CreateUserDto {
   @ApiProperty()

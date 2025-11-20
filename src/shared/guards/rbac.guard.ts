@@ -13,7 +13,7 @@ import {
   PERMISSIONS_KEY,
   REQUEST_USER_KEY,
   RequireOption,
-} from '@/common/constants';
+} from '@/shared/constants';
 
 import { RequiredPermission } from '../decorators';
 import { PrismaService } from '../services';

@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { ErrorCode } from '@/common/constants';
+import { ErrorCode } from '@/shared/constants';
 
 import { BaseException } from './base.exception';
 

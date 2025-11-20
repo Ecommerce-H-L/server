@@ -4,7 +4,8 @@ import { User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { CreateEmailResponse } from 'resend';
 
-import { ErrorCode, TokenPayload } from '@/common';
+import { Env } from '@/config/env';
+import { ErrorCode, TokenPayload } from '@/shared';
 import {
   AuthException,
   EmailAlreadyExistsException,
@@ -14,15 +15,14 @@ import {
   TokenExpiredException,
   TokenInvalidException,
   TokenRevokedException,
-} from '@/common/exceptions';
+} from '@/shared/exceptions';
 import {
   EmailService,
   HashingService,
   LoggerService,
   PrismaService,
   TokenService,
-} from '@/common/services';
-import { Env } from '@/config/env';
+} from '@/shared/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 
 import { LoginBodyDTO, LoginResponseDTO, RegisterBodyDTO } from './auth.dto';

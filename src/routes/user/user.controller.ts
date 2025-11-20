@@ -21,7 +21,7 @@ import {
 import { PermissionAction, PermissionFeature } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 
-import type { TokenPayload } from '@/common';
+import type { TokenPayload } from '@/shared';
 import {
   ActiveUser,
   Auth,
@@ -29,7 +29,7 @@ import {
   AuthType,
   Permissions,
   RbacGuard,
-} from '@/common';
+} from '@/shared';
 
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { UserEntity } from './user.entity';

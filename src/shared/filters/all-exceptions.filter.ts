@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { LoggerService } from '@/common/services';
+import { LoggerService } from '@/shared/services';
 
 import { BaseException, ExceptionDetail } from '../exceptions';
 
