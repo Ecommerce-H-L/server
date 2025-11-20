@@ -14,6 +14,10 @@ export const EnvSchema = z.object({
   THROTTLE_LIMIT: z.coerce.number().int().positive(),
 
   DATABASE_URL: z.string(),
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
+  POSTGRES_DB: z.string(),
+
   FRONTEND_BASE_URL: z.string(),
 
   ACCESS_TOKEN_SECRET: z.string().min(1),
