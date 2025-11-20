@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@prisma/client';
+import { User, VerificationCodeType } from '@prisma/client';
 import dayjs from 'dayjs';
 import { CreateEmailResponse } from 'resend';
 
@@ -20,7 +20,6 @@ import {
   EmailService,
   HashingService,
   LoggerService,
-  PrismaService,
   TokenService,
 } from '@/shared/services';
 import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
@@ -28,31 +27,38 @@ import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from '@/utils';
 import { LoginBodyDTO, LoginResponseDTO, RegisterBodyDTO } from './auth.dto';
 import { generateOTP } from './auth.helper';
 import { SendOTPBodyType } from './auth.model';
+import { AuthRepo } from './auth.repo';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly hashingService: HashingService,
-    private readonly prismaService: PrismaService,
     private readonly tokenService: TokenService,
     private readonly logger: LoggerService,
     private readonly configService: ConfigService<Env, true>,
     private readonly emailService: EmailService,
+    private readonly authRepo: AuthRepo,
   ) {}
 
-  async register(body: RegisterBodyDTO): Promise<User> {
+  async register(body: RegisterBodyDTO): Promise<Omit<User, 'passwordHash'>> {
     try {
-      const { password, ...userData } = body;
+      const { password } = body;
       const hashedPassword = await this.hashingService.hash(password);
-      const user = await this.prismaService.user.create({
-        data: {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          role: userData.role,
-          email: userData.email,
+      const [user] = await Promise.all([
+        this.authRepo.createUser({
+          email: body.email,
+          firstName: body.firstName,
+          lastName: body.lastName,
           passwordHash: hashedPassword,
-        },
-      });
+          role: body.role,
+        }),
+        this.authRepo.deleteVerificationCode({
+          email_type: {
+            email: body.email,
+            type: VerificationCodeType.REGISTER,
+          },
+        }),
+      ]);
       this.logger.log('User registered successfully', 'AuthService');
       return user;
     } catch (error) {
@@ -70,9 +76,7 @@ export class AuthService {
   }
 
   async login(body: LoginBodyDTO): Promise<LoginResponseDTO> {
-    const user = await this.prismaService.user.findUnique({
-      where: { email: body.email },
-    });
+    const user = await this.authRepo.findUserByEmail(body.email);
     if (!user) {
       this.logger.warn('Invalid credentials provided', 'AuthService');
       throw new InvalidCredentialsException();
@@ -110,12 +114,10 @@ export class AuthService {
       exp: number;
     }>(refreshToken);
 
-    await this.prismaService.refreshToken.create({
-      data: {
-        token: refreshToken,
-        userId: payload.user.id,
-        expiredAt: dayjs.unix(decodedRefreshToken.exp ?? 0).toISOString(),
-      },
+    await this.authRepo.createRefreshToken({
+      token: refreshToken,
+      userId: payload.user.id,
+      expiredAt: dayjs.unix(decodedRefreshToken.exp ?? 0).toDate(),
     });
 
     this.logger.debug('Tokens generated successfully', 'AuthService');
@@ -124,9 +126,7 @@ export class AuthService {
 
   async refreshTokens(refreshToken: string): Promise<LoginResponseDTO> {
     try {
-      await this.prismaService.refreshToken.findUnique({
-        where: { token: refreshToken },
-      });
+      await this.authRepo.findRefreshToken({ token: refreshToken });
 
       const decodedToken =
         await this.tokenService.verifyRefreshToken<TokenPayload>(refreshToken);
@@ -140,9 +140,7 @@ export class AuthService {
         user: decodedToken.user,
       });
 
-      await this.prismaService.refreshToken.delete({
-        where: { token: refreshToken },
-      });
+      await this.authRepo.deleteRefreshToken({ token: refreshToken });
 
       this.logger.log('Tokens refreshed successfully', 'AuthService');
       return tokens;
@@ -162,27 +160,22 @@ export class AuthService {
 
   async logout(refreshToken: string) {
     try {
-      const stored = await this.prismaService.refreshToken.findUnique({
-        where: { token: refreshToken },
+      const stored = await this.authRepo.findRefreshToken({
+        token: refreshToken,
       });
       if (!stored) {
-        this.logger.warn('Refresh token expired during logout', 'AuthService');
-        throw new TokenExpiredException('refresh');
+        this.logger.warn('Refresh token not found', 'AuthService');
+        throw new TokenRevokedException();
       }
 
       try {
         await this.tokenService.verifyRefreshToken(refreshToken);
-      } catch (err) {
+      } catch {
         this.logger.warn('Invalid refresh token during logout', 'AuthService');
         throw new TokenInvalidException('Refresh token is invalid or expired');
       }
 
-      await this.prismaService.refreshToken.delete({
-        where: {
-          token: refreshToken,
-        },
-      });
-
+      await this.authRepo.deleteRefreshToken({ token: refreshToken });
       this.logger.log('User logged out successfully', 'AuthService');
       return { message: 'Logout successfully' };
     } catch (error) {
@@ -207,9 +200,7 @@ export class AuthService {
   }
 
   async sendOtp(body: SendOTPBodyType) {
-    const user = await this.prismaService.user.findUnique({
-      where: { email: body.email },
-    });
+    const user = await this.authRepo.findUserByEmail(body.email);
 
     const code = generateOTP();
 
@@ -245,27 +236,13 @@ export class AuthService {
       throw new ResourceNotFoundException('User', body.email);
     }
 
-    await this.prismaService.verificationCode.upsert({
-      where: {
-        email_type: {
-          email: body.email,
-          type: body.type,
-        },
-      },
-      create: {
-        email: body.email,
-        type: body.type,
-        code,
-        expiresAt: dayjs()
-          .add(this.configService.get('OTP_EXPIRES_IN'), 'millisecond')
-          .toISOString(),
-      },
-      update: {
-        code,
-        expiresAt: dayjs()
-          .add(this.configService.get('OTP_EXPIRES_IN'), 'millisecond')
-          .toISOString(),
-      },
+    await this.authRepo.createVerificationCode({
+      email: body.email,
+      type: body.type,
+      code,
+      expiresAt: dayjs()
+        .add(this.configService.get('OTP_EXPIRES_IN'), 'millisecond')
+        .toISOString(),
     });
 
     this.logger.log(`OTP generated for ${body.email}`, 'AuthService');
