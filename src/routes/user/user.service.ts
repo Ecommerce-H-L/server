@@ -1,16 +1,24 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 
-import { SharedUserRepository } from '@/shared';
 import {
   EmailAlreadyExistsException,
   UserNotFoundException,
 } from '@/shared/exceptions';
+import { SharedUserRepository } from '@/shared/repositories';
 import { HashingService, LoggerService } from '@/shared/services';
 import { isUniqueConstraintPrismaError } from '@/utils';
 
-import { CreateUserDto, UpdateUserDto, UserEntity } from './';
+import {
+  CreateUserBodyDto,
+  DeleteUserResDto,
+  GetUserResDto,
+  GetUsersResDto,
+  UpdateUserBodyDto,
+  UpdateUserResDto,
+} from './user.dto';
 import { BASE_SELECT, toEntity } from './user.helper';
+import { CreateUserResType } from './user.model';
 import { UserRepo } from './user.repo';
 
 @Injectable()
@@ -22,19 +30,19 @@ export class UserService {
     private readonly sharedUserRepo: SharedUserRepository,
   ) {}
 
-  async create(dto: CreateUserDto): Promise<UserEntity> {
-    const passwordHash = await this.hashingService.hash(dto.password);
+  async create(body: CreateUserBodyDto): Promise<CreateUserResType> {
+    const passwordHash = await this.hashingService.hash(body.password);
     try {
-      const created = await this.sharedUserRepo.create({
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        email: dto.email,
+      const user = await this.sharedUserRepo.create({
+        firstName: body.firstName,
+        lastName: body.lastName,
+        email: body.email,
         passwordHash,
-        role: dto.role ?? UserRole.USER,
+        role: body.role ?? UserRole.USER,
       });
 
       this.logger.log('User created successfully', 'UserService');
-      return toEntity(created);
+      return user;
     } catch (e) {
       if (isUniqueConstraintPrismaError(e)) {
         this.logger.error('Email already in use', e.message, 'UserService');
@@ -49,17 +57,17 @@ export class UserService {
     }
   }
 
-  async findAll(): Promise<UserEntity[]> {
+  async findAll(): Promise<GetUsersResDto> {
     const users = await this.userRepo.findMany({
       where: { deletedAt: null },
       select: BASE_SELECT,
       orderBy: { createdAt: 'desc' },
     });
     this.logger.log('Fetched all users', 'UserService');
-    return users.map(toEntity);
+    return users;
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string): Promise<GetUserResDto> {
     const user = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: BASE_SELECT,
@@ -69,10 +77,10 @@ export class UserService {
       throw new UserNotFoundException(id);
     }
     this.logger.log(`Fetched user: ${id}`, 'UserService');
-    return toEntity(user);
+    return user;
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<UserEntity> {
+  async update(id: string, body: UpdateUserBodyDto): Promise<UpdateUserResDto> {
     const existing = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: { id: true },
@@ -83,18 +91,18 @@ export class UserService {
     }
 
     let passwordHash: string | undefined;
-    if (dto.password) {
-      passwordHash = await this.hashingService.hash(dto.password);
+    if (body.password) {
+      passwordHash = await this.hashingService.hash(body.password);
     }
 
     try {
       const updated = await this.sharedUserRepo.update(
         {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          email: dto.email,
+          firstName: body.firstName,
+          lastName: body.lastName,
+          email: body.email,
           ...(passwordHash ? { passwordHash } : {}),
-          ...(dto.role ? { role: dto.role } : {}),
+          ...(body.role ? { role: body.role } : {}),
         },
         {
           where: { id },
@@ -110,7 +118,7 @@ export class UserService {
           e.message,
           'UserService',
         );
-        throw new EmailAlreadyExistsException(dto.email);
+        throw new EmailAlreadyExistsException(body.email);
       }
       this.logger.error(
         'Error during user update',
@@ -121,7 +129,7 @@ export class UserService {
     }
   }
 
-  async remove(id: string): Promise<UserEntity> {
+  async remove(id: string): Promise<DeleteUserResDto> {
     const existing = await this.userRepo.findFirst({
       where: { id, deletedAt: null },
       select: BASE_SELECT,
@@ -131,11 +139,11 @@ export class UserService {
       throw new UserNotFoundException(id);
     }
 
-    const removed = await this.sharedUserRepo.update(
+    const user = await this.sharedUserRepo.update(
       { deletedAt: new Date() },
       { where: { id }, select: BASE_SELECT },
     );
     this.logger.log(`User deleted successfully: ${id}`, 'UserService');
-    return toEntity(removed);
+    return user;
   }
 }

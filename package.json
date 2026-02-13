@@ -22,13 +22,13 @@
     "prepare": "husky && chmod +x .husky/pre-commit",
     "precommit": "lint-staged",
     "prisma:format": "npx prisma format --schema ./src/db/prisma/schema.prisma",
-    "prisma:generate": "cd src && npx prisma generate --schema ./db/prisma/schema.prisma",
-    "prisma:migrate-dev": "cd src && npx prisma migrate dev --schema ./db/prisma/schema.prisma",
+    "prisma:generate": "npx prisma generate --schema ./db/prisma/schema.prisma",
+    "prisma:migrate-dev": "npx prisma migrate dev --schema ./db/prisma/schema.prisma",
     "prisma:create-only": "npx prisma migrate dev --schema ./src/db/prisma/schema.prisma --create-only",
     "prisma:deploy": "npx prisma migrate deploy --schema ./src/db/prisma/schema.prisma",
     "prisma:deploy-test": "npx prisma migrate deploy --schema ./src/db/prisma/schema-test.prisma",
-    "prisma:push": "cd src && npx prisma db push --schema ./db/prisma/schema.prisma",
-    "prisma:reset": "cd src && npx prisma migrate reset --schema ./db/prisma/schema.prisma",
+    "prisma:push": "npx prisma db push --schema ./db/prisma/schema.prisma",
+    "prisma:reset": "npx prisma migrate reset --schema ./db/prisma/schema.prisma",
     "prisma:seed": "ts-node -r tsconfig-paths/register src/scripts/seed-data.script.ts"
   },
   "lint-staged": {

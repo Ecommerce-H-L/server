@@ -1,175 +1,49 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
 import { createZodDto } from 'nestjs-zod';
 
-import { UserRole } from '@/db/kysely/enums';
-import { Match } from '@/shared/decorators';
+import {
+  LoginBodySchema,
+  LogoutBodySchema,
+  RefreshTokenSchema,
+  RegisterBodySchema,
+  ResetPasswordBodySchema,
+  SendOTPBodySchema,
+} from './auth.model';
 
-import { SendOTPBodySchema } from './auth.model';
+export class RegisterBodyDTO extends createZodDto(RegisterBodySchema) {}
+export class LoginBodyDTO extends createZodDto(LoginBodySchema) {}
+export class LogoutBodyDTO extends createZodDto(LogoutBodySchema) {}
+export class RefreshTokenDTO extends createZodDto(RefreshTokenSchema) {}
+export class ResetPasswordBody extends createZodDto(ResetPasswordBodySchema) {}
+export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}
 
-export class RegisterBodyDTO {
-  @ApiProperty({ maxLength: 254 })
-  @Transform(({ value }: { value: string }) =>
-    value?.toLowerCase()?.normalize('NFKC')?.trim(),
-  )
-  @IsNotEmpty({ message: 'Email cannot be empty' })
-  @IsEmail({}, { message: 'Invalid email address' })
-  @MaxLength(254, { message: 'Email must be at most 254 characters' })
-  email!: string;
-
-  @ApiProperty({ minLength: 12, maxLength: 128 })
-  @Transform(({ value }: { value: string }) => value?.normalize('NFKC')?.trim())
-  @IsString()
-  @IsNotEmpty({ message: 'Password cannot be empty' })
-  @MinLength(8, { message: 'Password must be at least 8 characters' })
-  @MaxLength(128, { message: 'Password must be at most 128 characters' })
-  @Matches(/^\S+$/, { message: 'Password cannot contain spaces' })
-  @Matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+/, {
-    message: 'Include uppercase, lowercase, number, and symbol',
-  })
-  password!: string;
-
-  @ApiProperty()
-  @IsString()
-  firstName!: string;
-
-  @ApiProperty()
-  @IsString()
-  lastName!: string;
-
-  @ApiProperty()
-  @IsString()
-  role!: UserRole;
-
-  @ApiProperty()
-  @Match('password', {
-    message: 'Confirm password does not match with password',
-  })
-  confirmedPassword!: string;
-
-  @ApiProperty()
-  @IsString()
-  code!: string;
-}
-
+// Keep response DTOs as classes for Swagger
 export class RegisterUserData {
-  @ApiProperty()
-  id!: string;
-
-  @ApiProperty()
-  email!: string;
-
-  @ApiProperty()
-  firstName!: string;
-
-  @ApiProperty()
-  lastName!: string;
-
-  @ApiProperty()
-  role!: UserRole;
-
-  @ApiProperty()
-  createdAt!: Date;
-
-  @ApiProperty()
-  updatedAt!: Date;
-
-  @Exclude()
-  passwordHash!: string;
+  @ApiProperty() id!: string;
+  @ApiProperty() email!: string;
+  @ApiProperty() firstName!: string;
+  @ApiProperty() lastName!: string;
+  @ApiProperty() role!: string;
+  @ApiProperty() createdAt!: Date;
+  @ApiProperty() updatedAt!: Date;
 }
 
 export class RegisterResponseDTO {
-  @ApiProperty({ type: RegisterUserData })
-  user!: RegisterUserData;
-
-  @ApiProperty()
-  accessToken!: string;
-
-  @ApiProperty()
-  refreshToken!: string;
-
-  constructor(partial: Partial<RegisterResponseDTO>) {
-    Object.assign(this, partial);
-  }
-}
-
-export class LoginBodyDTO {
-  @ApiProperty({ maxLength: 254 })
-  @Transform(({ value }: { value: string }) =>
-    value?.toLowerCase()?.normalize('NFKC')?.trim(),
-  )
-  @IsNotEmpty({ message: 'Email cannot be empty' })
-  @IsEmail({}, { message: 'Invalid email address' })
-  email!: string;
-
-  @ApiProperty({ minLength: 8, maxLength: 128 })
-  @Transform(({ value }: { value: string }) => value?.normalize('NFKC')?.trim())
-  @IsString()
-  @IsNotEmpty({ message: 'Password cannot be empty' })
-  password!: string;
+  @ApiProperty({ type: RegisterUserData }) user!: RegisterUserData;
+  @ApiProperty() accessToken!: string;
+  @ApiProperty() refreshToken!: string;
 }
 
 export class LoginResponseDTO {
-  @ApiProperty()
-  accessToken!: string;
-
-  @ApiProperty()
-  refreshToken!: string;
-
-  constructor(partial: Partial<LoginResponseDTO>) {
-    Object.assign(this, partial);
-  }
+  @ApiProperty() accessToken!: string;
+  @ApiProperty() refreshToken!: string;
 }
-
-export class RefreshTokenDTO {
-  @ApiProperty()
-  @IsString()
-  refreshToken!: string;
-}
-
-export class RefreshTokenResponseDTO extends LoginResponseDTO {
-  constructor(partial: Partial<RefreshTokenResponseDTO>) {
-    super(partial);
-  }
-}
-
-export class LogoutDTO extends RefreshTokenDTO {}
 
 export class LogoutResponseDTO {
-  @ApiProperty()
-  message: string;
-  constructor(partial: Partial<LogoutResponseDTO>) {
-    Object.assign(this, partial);
-  }
+  @ApiProperty() message!: string;
 }
 
-export class SendOTPBodyDTO extends createZodDto(SendOTPBodySchema) {}
-
-export class ResetPasswordBody {
-  @ApiProperty()
-  @IsEmail({}, { message: 'Invalid email address' })
-  @IsNotEmpty({ message: 'Email is required' })
-  email!: string;
-
-  @ApiProperty()
-  @IsString({ message: 'Invalid verification code' })
-  @IsNotEmpty({ message: 'Verification code is required' })
-  code!: string;
-  @ApiProperty()
-  @IsString({ message: 'New password must be a string' })
-  @IsNotEmpty({ message: 'New password is required' })
-  newPassword!: string;
-
-  @ApiProperty()
-  @IsString({ message: 'Confirm new password must be a string' })
-  @IsNotEmpty({ message: 'Confirmation of new password is required' })
-  confirmedNewPassword!: string;
+export class RefreshTokenResponseDTO {
+  @ApiProperty() accessToken!: string;
+  @ApiProperty() refreshToken!: string;
 }

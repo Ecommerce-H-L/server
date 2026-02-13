@@ -1,8 +1,9 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { LoggerModule } from 'nestjs-pino';
+import { Logger, LoggerModule } from 'nestjs-pino';
+import { ZodSerializerInterceptor } from 'nestjs-zod';
 
 import { createLoggerOptions } from '@/utils';
 
@@ -12,7 +13,13 @@ import { Env, validateEnv } from './config/env';
 import { AuthModule } from './routes/auth';
 import { HealthController, HealthModule } from './routes/health';
 import { UserModule } from './routes/user';
-import { SharedModule, TokenService } from './shared';
+import {
+  AllExceptionsFilter,
+  CustomZodValidationPipe,
+  LoggerService,
+  SharedModule,
+  TokenService,
+} from './shared';
 
 @Module({
   imports: [
@@ -54,12 +61,21 @@ import { SharedModule, TokenService } from './shared';
   providers: [
     AppService,
     {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      provide: APP_PIPE,
+      useClass: CustomZodValidationPipe,
+    },
+    {
+      provide: APP_FILTER,
+      useFactory: (logger: LoggerService) => new AllExceptionsFilter(logger),
+      inject: [Logger],
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
+      useClass: ZodSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     TokenService,
   ],

@@ -1,47 +1,26 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
+import { createZodDto } from 'nestjs-zod';
+
 import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  Length,
-  MaxLength,
-} from 'class-validator';
+  CreateUserBodySchema,
+  GetUserParamsSchema,
+  GetUserResSchema,
+  GetUsersQuerySchema,
+  GetUsersResSchema,
+  UpdateUserBodySchema,
+} from './user.model';
 
-import { Match } from '@/shared';
+// Request DTOs
+export class CreateUserBodyDto extends createZodDto(CreateUserBodySchema) {}
+export class UpdateUserBodyDto extends createZodDto(UpdateUserBodySchema) {}
 
-export class CreateUserDto {
-  @ApiProperty()
-  @IsString()
-  @Length(1, 100)
-  firstName!: string;
+export class GetUserParamsDto extends createZodDto(GetUserParamsSchema) {}
+export class GetUsersQueryDto extends createZodDto(GetUsersQuerySchema) {}
 
-  @ApiProperty()
-  @IsString()
-  @Length(1, 100)
-  lastName!: string;
+// Response DTOs (optional, but useful for @ZodResponse / @ZodSerializerDto)
+export class GetUserResDto extends createZodDto(GetUserResSchema) {}
+export class GetUsersResDto extends createZodDto(GetUsersResSchema) {}
 
-  @ApiProperty()
-  @IsEmail()
-  @MaxLength(254)
-  email!: string;
-
-  @ApiProperty()
-  @IsString()
-  @Length(8, 200)
-  password!: string;
-
-  @ApiProperty()
-  @IsString()
-  @Length(8, 200)
-  @Match('password', { message: 'confirmPassword must match password' })
-  confirmPassword!: string;
-
-  @ApiProperty({ enum: UserRole, required: false })
-  @IsOptional()
-  @IsEnum(UserRole)
-  role?: UserRole;
-}
-
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+// Optional “semantic aliases” if you like explicit endpoint naming:
+export class CreateUserResDto extends GetUserResDto {}
+export class UpdateUserResDto extends GetUserResDto {}
+export class DeleteUserResDto extends GetUserResDto {}
